@@ -1,0 +1,27 @@
+﻿<h2>Adaugare postare</h2>
+<br />
+
+<form method="post" action="/Posts/New">
+
+    <label>Continutul postarii</label>
+    <input type="text" name="Content">
+    <br />
+    <br />
+
+    <input type="hidden" name="Date" value="@DateTime.Now" />
+    <br />
+
+    <label>Selecteaza categoria</label>
+    <select name="CategoryId">
+
+         @foreach(var item in ViewBag.Categories)
+        {
+            <option value="@item.Id">@item.CategoryName</option>
+        }
+
+    </select>
+    <br />
+
+    <button class="btn btn-primary" type="submit">Adauga postarea</button>
+
+</form>

@@ -1,0 +1,135 @@
+﻿<div class="d-flex justify-content-center">
+
+    <a class="btn btn-primary" href="/Posts/Index/">Afisare postari</a>
+
+    <a class="btn btn-primary" href="/Posts/New/">Adauga postare</a>
+
+</div>
+
+<br />
+
+<div class="card">
+
+    <div class="card-body">
+
+        <p class="card-text">@ViewBag.Post.Content</p>
+
+        <div class="d-flex flex-row justify-content-between mt-5">
+
+            <div><i class="bi bi-tag"></i> @ViewBag.Category.CategoryName</div>
+            <span class="alert-primary">@ViewBag.Post.Date</span>
+
+        </div>
+
+    </div>
+
+    <hr />
+
+    <div class="d-flex flex-row justify-content-between">
+
+        <a href="/Posts/Edit/@ViewBag.Post.Id" class="btn btn-outline-primary">Editeaza postarea</a>
+
+        <form method="post" action="/Posts/Delete/@ViewBag.Post.Id">
+
+            <button class="btn btn-outline-danger" type="submit">Sterge postarea</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<br />
+<br />
+
+@* Afisare comentarii impreuna cu butoanele de editare si stergere *@
+
+@foreach (var comm in ViewBag.Post.Comments)
+{
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-2"></div>
+
+            <div class="col-md-8">
+
+                <div>
+
+                    <p>@comm.Content</p>
+                    <small>@comm.Date</small>
+
+                </div>
+
+                <br />
+
+                <div class="d-flex">
+
+                    <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Editeaza</a>
+
+                </div>
+
+                <div>
+
+                    <form method="post" action="/Comments/Delete/@comm.Id">
+
+                        <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-2"></div>
+
+        </div>
+
+    </div>
+
+    <br />
+    <br />
+}
+
+<br />
+<br />
+
+
+@* Afisarea formularului in care se poate adauga un comentariu *@
+
+<div class="container">
+
+    <div class="row">
+
+        <div class="col-md-2"></div>
+
+        <div class="col-md-8">
+
+            <div class="card">
+
+                <form method="post" action="/Comments/New">
+                
+                    <div class="card-body">
+
+                        <input type="hidden" name="PostId" value="@ViewBag.Post.Id" />
+
+                        <label>Continutul comentariului</label>
+                        <br />
+                        <textarea class="form-control" name="Content"></textarea>
+                        <br />
+
+                        <button class="btn btn-primary type="submit">Adauga comentariul</button>
+
+                    </div>
+                    
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-2"></div>
+
+    </div>
+
+</div>

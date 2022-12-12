@@ -1,0 +1,33 @@
+﻿<h2>Editare postare</h2>
+<br />
+
+<form method="post" action="/Posts/Edit/@ViewBag.Post.Id">
+
+    <label>Continutul postarii</label>
+    <input type="text" name="Content" value="@ViewBag.Post.Content">
+    <br />
+    <br />
+
+    <input type="hidden" name="Date" value="@DateTime.Now" />
+    <br />
+
+    <select name="CategoryId">
+
+        @foreach (var category in ViewBag.Categories)
+        {
+            if (category.Id == ViewBag.Category.Id)
+            {
+                <option selected="selected" value="@category.Id">@category.CategoryName</option>
+            }
+            else
+            {
+                <option value="@category.Id">@category.CategoryName</option>
+            }
+        }
+
+    </select>
+    <br />
+
+    <button class="btn btn-primary" type="submit">Modifica postarea</button>
+
+</form>
