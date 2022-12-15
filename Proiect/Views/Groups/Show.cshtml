@@ -1,0 +1,92 @@
+﻿<div class="d-flex justify-content-center">
+
+    <a class="btn btn-primary" href="/Groups/Index/">Afisare grupuri</a>
+
+    <a class="btn btn-primary" href="/Groups/New/">Adauga grup</a>
+
+</div>
+
+<br />
+
+<a href="/Posts/Index">Inapoi la postari</a>
+<br />
+<br />
+
+<br />
+
+@* Afisare informatii grup + buton editare grup si stergere grup si adaugare postare in grup *@
+
+<div class="card">
+
+    <div class="card-body">
+
+        <h2 class="alert-primary">@ViewBag.Group.GroupName</h2>
+
+        <p class="card-text">@ViewBag.Group.Description</p>
+
+        <span class="alert-primary">@ViewBag.Group.Date</span>
+
+        <div class="d-flex flex-row justify-content-between mt-5">
+
+            <a class="btn btn-primary" href="/Posts/New/@ViewBag.Group.Id">Adauga postare in grup</a>
+
+            <a class="btn btn-primary" href="/Groups/Edit/@ViewBag.Group.Id">Editeaza grupul</a>
+            
+            <form method="post" action="/Groups/Delete/@ViewBag.Group.Id">
+
+                <button class="btn btn-outline-danger" type="submit">Sterge grupul</button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<br />
+<br />
+
+@* Afisare postari *@
+
+@foreach (var post in ViewBag.Group.Posts)
+{
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-2"></div>
+
+            <div class="col-md-8">
+
+                <div class="card">
+
+                    <div class="card-body">
+
+                        <div class="alert-primary">@post.Title</div>
+
+                        <div class="card-text">@post.Content</div>
+
+                        <div class="d-flex flex-row justify-content-between mt-5">
+                
+                            <div><i class="bi bi-tag"></i> @post.Category.CategoryName </div>
+                            <a href="/Posts/Show/@post.Id" class="btn btn-outline-primary">Afisare postare</a>
+                            <span class="alert-primary">@post.Date</span>
+            
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-2"></div>
+
+        </div>
+
+    </div>
+
+    <br />
+    <br />
+}

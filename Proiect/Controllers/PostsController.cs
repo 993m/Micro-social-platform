@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Proiect.Data;
 using Proiect.Models;
@@ -41,11 +40,13 @@ namespace Proiect.Controllers
         // Se afiseaza formularul in care se vor completa datele unei postari impreuna cu selectarea categoriei din care face parte postarea
         // HttpGet implicit
 
-        public IActionResult New() 
+        public IActionResult New(int? IdGroup) 
         {
             var categories = from categ in db.Categories
                              select categ;
 
+
+            ViewBag.GroupId = IdGroup;
             ViewBag.Categories = categories;
 
             return View();
@@ -60,12 +61,18 @@ namespace Proiect.Controllers
             {
                 db.Posts.Add(post);
                 db.SaveChanges();
+
+                if(post.GroupId != null)
+                {
+                    return Redirect("/Groups/Show/" + post.GroupId);
+                }
+
                 return RedirectToAction("Index");
             }
 
             catch (Exception)
             {
-                return RedirectToAction("New");
+                return RedirectToAction("New", post.GroupId);
             }     
         }
 

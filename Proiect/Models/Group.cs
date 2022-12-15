@@ -10,6 +10,8 @@ namespace Proiect.Models
         [Required(ErrorMessage = "Numele grupului este obligatoriu.")]
         public string GroupName { get; set; }
 
+        public DateTime Date { get; set; }
+
         public string? Description { get; set; }
 
         public virtual ICollection<Post> Posts { get; set; }

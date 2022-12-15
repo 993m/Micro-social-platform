@@ -1,0 +1,18 @@
+﻿<h2>Editare grup</h2>
+<br />
+
+<form method="post" action="/Groups/Edit/@ViewBag.Group.Id">
+
+    <label>Numele grupului</label>
+    <br /> <input type="text" name="GroupName" value="@ViewBag.Group.GroupName" />
+    <br /> <br />
+
+    <label>Descrierea grupului</label>
+    <br /> <input type="text" name="Description" value="@ViewBag.Group.Description" />
+    <br /> <br />
+
+    <br /> <input type="hidden" name="Date" value="@DateTime.Now" />
+
+    <br /> <button class="btn btn-primary" type="submit">Modifica grupul</button>
+
+</form>

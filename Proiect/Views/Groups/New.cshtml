@@ -1,0 +1,23 @@
+﻿<h2>Adaugare grup</h2>
+<br />
+
+<form method="post" action="/Groups/New">
+
+    <label>Numele grupului</label>
+    <br /><input type="text" name="GroupName" />
+
+    <br />
+    <br />
+
+    <input type="hidden" name="Date" value="@DateTime.Now" />
+    <br />
+
+    <label>Descrierea grupului</label>
+    <br /><input type="text" name="Description" />
+    
+    <br />
+    <br />
+
+    <button class="btn btn-primary" type="submit">Adauga grupul</button>
+
+</form>

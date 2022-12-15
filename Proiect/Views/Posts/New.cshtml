@@ -1,14 +1,15 @@
 ﻿<h2>Adaugare postare</h2>
 <br />
 
-<form method="post" action="/Posts/New">
+<form method="post" action="/Posts/New/">
+    <label>Titlul postarii</label>
+    <input type="text" name="Title" />
+    <br />
+    <br />
 
     <label>Continutul postarii</label>
-    <input type="text" name="Content">
+    <input type="text" name="Content" />
     <br />
-    <br />
-
-    <input type="hidden" name="Date" value="@DateTime.Now" />
     <br />
 
     <label>Selecteaza categoria</label>
@@ -21,6 +22,11 @@
 
     </select>
     <br />
+    <br />
+
+    <input type="hidden" name="Date" value="@DateTime.Now" />
+
+    <input type="hidden" name="GroupId" value="@ViewBag.GroupId" />
 
     <button class="btn btn-primary" type="submit">Adauga postarea</button>
 

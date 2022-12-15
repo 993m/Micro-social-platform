@@ -3,14 +3,17 @@
 
 <form method="post" action="/Posts/Edit/@ViewBag.Post.Id">
 
+    <label>Titlul postarii</label>
+    <input type="text" name="Title" value="@ViewBag.Post.Title">
+    <br />
+    <br />
+
     <label>Continutul postarii</label>
     <input type="text" name="Content" value="@ViewBag.Post.Content">
     <br />
     <br />
 
-    <input type="hidden" name="Date" value="@DateTime.Now" />
-    <br />
-
+    <label>Selecteaza categoria</label>
     <select name="CategoryId">
 
         @foreach (var category in ViewBag.Categories)
@@ -26,6 +29,11 @@
         }
 
     </select>
+    <br />
+    <br />
+
+    <input type="hidden" name="Date" value="@DateTime.Now" />
+    <br />
     <br />
 
     <button class="btn btn-primary" type="submit">Modifica postarea</button>

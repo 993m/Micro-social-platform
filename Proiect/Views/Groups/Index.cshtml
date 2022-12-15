@@ -1,0 +1,34 @@
+﻿<h2>Afisare grupuri</h2>
+<br />
+
+<div class="d-flex justify-content-center">
+
+    <a class="btn btn-primary" href="/Posts/Index/">Afisare postari</a>
+
+    <a class="btn btn-primary" href="/Groups/New/">Adauga grup</a>
+
+</div>
+
+@foreach (var group in ViewBag.Groups)
+{
+    <div class="card">
+
+        <div class="card-body">
+
+            <h1 class="alert-primary">@group.GroupName</h1>
+
+            <div class="card-text">@group.Description</div>
+
+            <div class="d-flex flex-row justify-content-between mt-5">
+                <a href="/Groups/Show/@group.Id" class="btn btn-outline-primary">Afisare grup</a>
+                <span class="alert-primary">@group.Date</span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+    <br />
+}

@@ -8,6 +8,8 @@ namespace Proiect.Models
         [Key]
         public int Id { get; set; }
 
+        public string Title { get; set; }
+
         [Required(ErrorMessage = "Continutul este obligatoriu.")]
         public string Content { get; set; }
 
