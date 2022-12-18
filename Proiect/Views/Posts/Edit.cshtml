@@ -13,6 +13,17 @@
     <br />
     <br />
 
+    @*
+        Adaugat vizualizare user
+    *@
+
+    @if (ViewBag.Post.User != null)
+    {
+        <div class="card-text">   <i class="bi bi-person-workspace">   </i>   @ViewBag.User.UserName</div>
+    }
+
+    <br />
+
     <label>Selecteaza categoria</label>
     <select name="CategoryId">
 

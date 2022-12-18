@@ -1,5 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
+/*
+ * Adaugat var 2:
+ * user
+ * 
+ */
+
 namespace Proiect.Models
 {
     public class Group
@@ -13,6 +19,12 @@ namespace Proiect.Models
         public DateTime Date { get; set; }
 
         public string? Description { get; set; }
+
+        public string? UserId { get; set; }
+
+        public virtual ApplicationUser? User { get; set; }
+
+        public virtual ICollection<ApplicationUsersInGroups>? Members { get; set; }
 
         public virtual ICollection<Post> Posts { get; set; }
     }

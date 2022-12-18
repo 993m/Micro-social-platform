@@ -1,6 +1,7 @@
 ﻿<h2>Afisare postari</h2>
 <br />
 
+
 <div class="d-flex justify-content-center ">
 
     <a href="/Categories/Index" class="btn btn-primary">Afisare categorii</a>
@@ -23,6 +24,15 @@
             <div class="alert-primary">@post.Title</div>
 
             <div class="card-text">@post.Content</div>
+
+            @*
+        Adaugat vizualizare user
+        *@
+
+            @if (post.User != null)
+            {
+                <div class="card-text">   <i class="bi bi-person-workspace">   </i>   @post.User.UserName</div>
+            }
 
             <div class="d-flex flex-row justify-content-between mt-5">
                 

@@ -1,0 +1,36 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model IEnumerable<Proiect.Models.Notification>
+
+
+<h1>Notificari</h1>
+
+
+@foreach(var notif in ViewBag.Notifs){
+    <div class="card-body">
+        
+
+        <div class="alert-primary">@notif.Message</div>
+        
+        <div class="d-flex flex-row justify-content-between mt-5">
+
+            <div><i class="bi bi-person-plus-fill"></i> @notif.FromUserName</div>
+        </div>
+
+        @if (notif.Group != null)
+        {
+            <div class="d-flex flex-row justify-content-between mt-5">
+
+            <div><i class="bi bi-menu-app-fill"></i> @notif.Group.GroupName</div>
+        </div>
+        }
+        
+        <a href="/Notifications/Confirm/@notif.Id" class="btn btn-primary">Confirma</a>
+        <a href="/Notifications/Decline/@notif.Id" class="btn btn-primary">Respinge</a>
+    </div>
+
+}

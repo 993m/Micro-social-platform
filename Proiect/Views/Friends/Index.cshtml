@@ -1,0 +1,22 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<h1>Prieteni</h1>
+
+@foreach(var friend in ViewBag.Friends){
+    <div class="card-body">
+        
+
+        <div class="d-flex flex-row justify-content-between mt-5">
+            
+
+            <div><i class="bi bi-person-plus-fill"></i> @friend.UserId</div>
+            <div><i class="bi bi-person-plus-fill"></i> @friend.FriendId</div>
+            <div><i class="bi bi-person-plus-fill"></i> @friend.User.UserName</div>
+        </div>
+
+    </div>
+}

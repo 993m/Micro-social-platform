@@ -1,0 +1,33 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Proiect.Models
+{
+    public class ApplicationUser : IdentityUser
+    {
+        public virtual ICollection<Comment>? Comments { get; set; }
+        
+        public virtual ICollection<Post>? Posts { get; set; }
+
+        public virtual ICollection<Group>? Groups { get; set; }
+        
+        public virtual ICollection<ApplicationUsersInGroups>? GroupsPartOf { get; set; }
+
+
+        public string? FirstName { get; set; }
+
+        public string? LastName { get; set; }
+
+        [NotMapped]
+        public IEnumerable<SelectListItem>? AllRoles { get; set; }
+
+        public virtual ICollection<Notification>? Notifications { get; set; }
+
+        public bool NewNotification { get; set; }
+
+        public virtual ICollection<Friend>? Friends { get; set; }
+        
+
+    }
+}

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Proiect.Data;
 using Proiect.Models;
 
@@ -7,11 +8,19 @@ namespace Poiect.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext db;
-
-        public CategoriesController(ApplicationDbContext context)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        public CategoriesController(
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager,
+        RoleManager<IdentityRole> roleManager
+        )
         {
             db = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
+
         public ActionResult Index()
         {
             var categories = from category in db.Categories
@@ -83,6 +92,18 @@ namespace Poiect.Controllers
             db.Categories.Remove(category);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        [NonAction]
+
+        //// Get current user role
+
+        public async Task<string> GetCurrRoleAsync()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var roles = await _userManager.GetRolesAsync(user);
+            var role = roles.FirstOrDefault();
+            return role;
         }
     }
 }

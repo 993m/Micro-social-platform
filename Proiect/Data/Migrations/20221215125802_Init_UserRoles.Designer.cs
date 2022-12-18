@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Proiect.Data;
 
@@ -11,13 +12,14 @@ using Proiect.Data;
 namespace Proiect.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221215125802_Init_UserRoles")]
+    partial class Init_UserRoles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.12")
+                .HasAnnotation("ProductVersion", "6.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -178,20 +180,11 @@ namespace Proiect.Data.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("NewNotification")
-                        .HasColumnType("bit");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -231,33 +224,6 @@ namespace Proiect.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("Proiect.Models.ApplicationUsersInGroups", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("Confirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ApplicationUsersInGroups");
                 });
 
             modelBuilder.Entity("Proiect.Models.Category", b =>
@@ -310,29 +276,6 @@ namespace Proiect.Data.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("Proiect.Models.Friend", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("FriendId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Friends");
-                });
-
             modelBuilder.Entity("Proiect.Models.Group", b =>
                 {
                     b.Property<int>("Id")
@@ -359,45 +302,6 @@ namespace Proiect.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("Proiect.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FromUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FromUserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GroupId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Seen")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Proiect.Models.Post", b =>
@@ -490,25 +394,6 @@ namespace Proiect.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Proiect.Models.ApplicationUsersInGroups", b =>
-                {
-                    b.HasOne("Proiect.Models.Group", "Group")
-                        .WithMany("Members")
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("GroupsPartOf")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Proiect.Models.Comment", b =>
                 {
                     b.HasOne("Proiect.Models.Post", "Post")
@@ -518,7 +403,7 @@ namespace Proiect.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Post");
@@ -526,37 +411,11 @@ namespace Proiect.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Proiect.Models.Friend", b =>
-                {
-                    b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("Friends")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Proiect.Models.Group", b =>
                 {
                     b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("Groups")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Proiect.Models.Notification", b =>
-                {
-                    b.HasOne("Proiect.Models.Group", "Group")
                         .WithMany()
-                        .HasForeignKey("GroupId");
-
-                    b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("Notifications")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Group");
 
                     b.Navigation("User");
                 });
@@ -574,7 +433,7 @@ namespace Proiect.Data.Migrations
                         .HasForeignKey("GroupId");
 
                     b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("Posts")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("Category");
@@ -584,21 +443,6 @@ namespace Proiect.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Proiect.Models.ApplicationUser", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Friends");
-
-                    b.Navigation("Groups");
-
-                    b.Navigation("GroupsPartOf");
-
-                    b.Navigation("Notifications");
-
-                    b.Navigation("Posts");
-                });
-
             modelBuilder.Entity("Proiect.Models.Category", b =>
                 {
                     b.Navigation("Posts");
@@ -606,8 +450,6 @@ namespace Proiect.Data.Migrations
 
             modelBuilder.Entity("Proiect.Models.Group", b =>
                 {
-                    b.Navigation("Members");
-
                     b.Navigation("Posts");
                 });
 

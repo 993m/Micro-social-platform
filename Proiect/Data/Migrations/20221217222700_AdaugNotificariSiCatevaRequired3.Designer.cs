@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Proiect.Data;
 
@@ -11,9 +12,10 @@ using Proiect.Data;
 namespace Proiect.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221217222700_AdaugNotificariSiCatevaRequired3")]
+    partial class AdaugNotificariSiCatevaRequired3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,29 +312,6 @@ namespace Proiect.Data.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("Proiect.Models.Friend", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("FriendId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Friends");
-                });
-
             modelBuilder.Entity("Proiect.Models.Group", b =>
                 {
                     b.Property<int>("Id")
@@ -526,17 +505,6 @@ namespace Proiect.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Proiect.Models.Friend", b =>
-                {
-                    b.HasOne("Proiect.Models.ApplicationUser", "User")
-                        .WithMany("Friends")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Proiect.Models.Group", b =>
                 {
                     b.HasOne("Proiect.Models.ApplicationUser", "User")
@@ -587,8 +555,6 @@ namespace Proiect.Data.Migrations
             modelBuilder.Entity("Proiect.Models.ApplicationUser", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Friends");
 
                     b.Navigation("Groups");
 
