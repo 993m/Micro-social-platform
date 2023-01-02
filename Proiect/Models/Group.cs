@@ -1,10 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-/*
- * Adaugat var 2:
- * user
- * 
- */
 
 namespace Proiect.Models
 {
@@ -26,7 +21,7 @@ namespace Proiect.Models
 
         public virtual ICollection<ApplicationUsersInGroups>? Members { get; set; }
 
-        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Post>? Posts { get; set; }
     }
 
 }

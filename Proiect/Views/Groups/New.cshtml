@@ -1,23 +1,23 @@
-﻿<h2>Adaugare grup</h2>
+﻿@model Proiect.Models.Group
+
+
+<h2>Adaugare grup</h2>
 <br />
 
-<form method="post" action="/Groups/New">
 
-    <label>Numele grupului</label>
-    <br /><input type="text" name="GroupName" />
+@using (Html.BeginForm(actionName: "New", controllerName: "Groups", method: FormMethod.Post))
+{
+    @Html.Label("GroupName", "Numele grupului")
+    <br />
+    @Html.TextBox("GroupName", null, new { @class = "form-control" })
+    @Html.ValidationMessage("GroupName", null, new { @class = "text-danger" })
+    <br /> <br />
 
+    @Html.Label("Description", "Descrierea grupului")
     <br />
-    <br />
+    @Html.TextArea("Description", null, new { @class = "form-control" })
+    <br /> <br />
 
-    <input type="hidden" name="Date" value="@DateTime.Now" />
-    <br />
-
-    <label>Descrierea grupului</label>
-    <br /><input type="text" name="Description" />
-    
-    <br />
-    <br />
 
     <button class="btn btn-primary" type="submit">Adauga grupul</button>
-
-</form>
+}

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Proiect.Data;
 using Proiect.Models;
+using System.Linq.Expressions;
 
 /*
  * Sper ca si aici e ok pana acum
@@ -31,21 +32,22 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        // Adaugarea unui comentariu asociat unei postari in baza de date
+        
         [HttpPost]
 
         public async Task<IActionResult> NewAsync(Comment comm)
         {
             comm.Date = DateTime.Now;
-
             var user = await _userManager.GetUserAsync(HttpContext.User);
             comm.User = user;
-            comm.UserId = user.Id;
 
             try
             {
                 db.Comments.Add(comm);
                 db.SaveChanges();
+
+                TempData["message"] = "Comentariul a fost adaugat";
+
                 return Redirect("/Posts/Show/" + comm.PostId);
             }
 
@@ -55,28 +57,33 @@ namespace Proiect.Controllers
             }
         }
 
-        // Stergerea unui comentariu asociat unei postari din baza de date
+        
         [HttpPost]
 
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(int? id)
         {
             Comment comm = db.Comments.Find(id);
+
+            id = comm.PostId;
 
             var user = _userManager.GetUserAsync(HttpContext.User).Result;
             var rolecurr = await GetCurrRoleAsync();
 
             if (user.Id != comm.UserId && rolecurr != "Admin" && rolecurr != "Moderator")
             {
+                TempData["message"] = "Nu puteti sterge acest comentariu";
                 return Redirect("/Posts/Show/" + comm.PostId);
             }
 
             db.Comments.Remove(comm);
             db.SaveChanges();
-            return Redirect("/Posts/Show/" + comm.PostId);
+
+            TempData["message"] = "Comentariul a fost sters";
+
+            return Redirect("/Posts/Show/" + id);
         }
 
-        // Se editeaza un comentariu existent
-
+        
         public async Task<IActionResult> EditAsync(int id)
         {
             Comment comm = db.Comments.Include("User")
@@ -88,11 +95,12 @@ namespace Proiect.Controllers
 
             if (user.Id != comm.UserId && rolecurr != "Admin" && rolecurr != "Moderator")
             {
+                TempData["message"] = "Nu puteti edita acest comentariu";
+
                 return Redirect("/Posts/Show/" + comm.PostId);
             }
-
-            ViewBag.Comment = comm;
-            return View();
+            
+            return View(comm);
         }
 
         [HttpPost]
@@ -102,16 +110,19 @@ namespace Proiect.Controllers
                             .Where(c => c.Id == id)
                             .First();
 
-            try
+            if (ModelState.IsValid)
             {
                 comm.Content = requestComment.Content;
                 db.SaveChanges();
+
+                TempData["message"] = "Comentariul a fost editat";
+
                 return Redirect("/Posts/Show/" + comm.PostId);
             }
 
-            catch (Exception)
+            else
             {
-                return Redirect("/Posts/Show/" + comm.PostId);
+                return View(comm);
             }
         }
 
@@ -126,5 +137,6 @@ namespace Proiect.Controllers
             var role = roles.FirstOrDefault();
             return role;
         }
+
     }
 }

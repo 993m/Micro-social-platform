@@ -28,6 +28,6 @@ namespace Proiect.Models
 
         public virtual ICollection<Friend>? Friends { get; set; }
         
-
+        public bool ProfilPrivat { get; set; }
     }
 }

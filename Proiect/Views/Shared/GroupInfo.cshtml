@@ -1,0 +1,17 @@
+﻿<div class="card-body">
+
+    <h1 class="alert-primary">@Model.GroupName</h1>
+    <br />
+
+    @if(Model.Description!=null){
+        <div class="text ">@Model.Description</div>
+        <br />
+    }
+
+    <div class="d-flex justify-content-between">
+        <a href="/ApplicationUsers/Show/@Model.User.Id"><i class="bi bi-person-video"></i>  @Model.User.UserName</a>
+        <span class="alert-primary">@Model.Date</span>
+    </div>
+
+</div>
+

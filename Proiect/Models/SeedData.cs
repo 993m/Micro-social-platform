@@ -50,7 +50,7 @@ namespace Proiect.Models
                     EmailConfirmed = true,
                     NormalizedEmail = "MODERATOR@TEST.COM",
                     Email = "moderator@test.com",
-                    NormalizedUserName = "EDITOR@TEST.COM",
+                    NormalizedUserName = "MODERATOR@TEST.COM",
                     PasswordHash = hasher.HashPassword(null, "Moderator1!")
                 },
                 new ApplicationUser
@@ -82,6 +82,7 @@ namespace Proiect.Models
                     UserId = "8e445865-a24d-4543-a6c6-9443d048cdb2"
                 }
                 );
+
                 context.SaveChanges();
             }
         }

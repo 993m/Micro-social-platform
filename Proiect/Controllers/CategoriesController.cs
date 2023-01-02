@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Proiect.Data;
 using Proiect.Models;
 
-namespace Poiect.Controllers
+namespace Proiect.Controllers
 {
     public class CategoriesController : Controller
     {
@@ -27,28 +28,28 @@ namespace Poiect.Controllers
                              orderby category.CategoryName
                              select category;
             ViewBag.Categories = categories;
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
+
+            SetAccessRights();
+
             return View();
         }
 
-        public ActionResult Show(int id)
-        {
-            Category category = db.Categories.Find(id);
-            ViewBag.Category = category;
-            return View();
-        }
-
-        public ActionResult New()
-        {
-            return View();
-        }
-
+        
         [HttpPost]
+        //[Authorize(Roles = "Admin,Moderator")]
         public ActionResult New(Category cat)
         {
             try
             {
                 db.Categories.Add(cat);
                 db.SaveChanges();
+                TempData["message"] = "Categoria a fost adaugata";
+
                 return RedirectToAction("Index");
             }
             catch (Exception)
@@ -57,40 +58,42 @@ namespace Poiect.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin,Moderator")]
         public ActionResult Edit(int id)
         {
             Category category = db.Categories.Find(id);
-            ViewBag.Category = category;
-            return View();
+            return View(category);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Moderator")]
         public ActionResult Edit(int id, Category requestCategory)
         {
-            try
-            {
-                Category category = db.Categories.Find(id);
+            Category category = db.Categories.Find(id);
 
-                {
-                    category.CategoryName = requestCategory.CategoryName;
-                    db.SaveChanges();
-                }
+            if (ModelState.IsValid)
+            {
+                category.CategoryName = requestCategory.CategoryName;
+                category.Description = requestCategory.Description;
+                db.SaveChanges();
+                TempData["message"] = "Categoria a fost editata";
 
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            else
             {
-                ViewBag.Category = requestCategory;
-                return View();
+                return View(category);
             }
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Moderator")]
         public ActionResult Delete(int id)
         {
             Category category = db.Categories.Find(id);
             db.Categories.Remove(category);
             db.SaveChanges();
+            TempData["message"] = "Categoria a fost stearsa";
             return RedirectToAction("Index");
         }
 
@@ -104,6 +107,17 @@ namespace Poiect.Controllers
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
             return role;
+        }
+
+        private void SetAccessRights()
+        {
+            ViewBag.AfisareButoane = false;
+
+            if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
         }
     }
 }

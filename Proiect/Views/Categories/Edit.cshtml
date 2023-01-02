@@ -1,16 +1,21 @@
-﻿<h2>Editare categorie</h2>
+﻿@model Proiect.Models.Category
 
-<form method="post" action="/Categories/Edit/@ViewBag.Category.Id">
+<h2>Editare categorie</h2>
 
-    <label>Numele categoriei</label>
-    <br /> <input type="text" name="CategoryName" value="@ViewBag.Category.CategoryName" />
-    <br /><br />
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Categories", method: FormMethod.Post, routeValues: new { id = Model.Id }))
+{
+    @Html.Label("CategoryName", "Numele Categoriei")
+    <br />
+    @Html.Editor("CategoryName", new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessage("CategoryName", null, new { @class = "text-danger" })
+    <br /> <br />
 
-    <label>Descriere</label>
-    <br /> <input type="text" name="Description" value="@ViewBag.Category.Description" />
-    <br /><br />
+    @Html.Label("Description", "Descriere")
+    <br />
+    @Html.Editor("Description", new { htmlAttributes = new { @class = "form-control" } })
+    <br /> <br />
 
 
     <button class="btn btn-primary" type="submit">Modifica categoria</button>
-</form>
+}
 

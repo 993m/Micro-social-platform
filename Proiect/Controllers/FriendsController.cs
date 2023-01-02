@@ -24,9 +24,23 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? searchString)
         {
             ViewBag.Friends = db.Friends.Include("User").Where(f => f.FriendId == _userManager.GetUserId(User));
+            ViewBag.AllUsers = from user in db.ApplicationUsers select user.UserName;
+            
+            if (searchString != null)
+            {
+                searchString = searchString.ToLower().Trim();
+
+                var users = from user in db.ApplicationUsers
+                            select new { UserId = user.Id, user.UserName };
+
+                users = users.Where(u => u.UserName.ToLower().Contains(searchString));
+
+                ViewBag.Users = users;
+            }
+
             return View();
         }
     }

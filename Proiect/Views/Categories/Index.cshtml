@@ -1,46 +1,59 @@
-﻿<h2>Afisare categorii</h2>
+﻿<h3 class="alert-primary">@ViewBag.Msg</h3>
+
+
+@* Formular adaugare categorie *@
+
+
+<h1>Adaugare Categorie</h1>
 <br />
-
-<a href="/Posts/Index">Inapoi la postari</a>
-<br />
-<br />
-
-@foreach (var category in ViewBag.Categories)
-{
-    <p>@category.CategoryName</p>
-    <div class="card-text">@category.Description</div>
-
-    <a class="btn alert-primary" href="/Categories/Edit/@category.Id">Editeaza categoria</a>
-    <form method="post" action="/Categories/Delete/@category.Id">
-        <button class="btn alert-danger" type="submit">Sterge</button>
-    </form>
-    <br />
-    <hr />
-    <br />
-}
-
-<br />
-<br />
-
-
-
-
-
-<h2>Adaugare Categorie</h2>
 
 <form method="post" action="/Categories/New">
 
     <label>Numele categoriei</label>
     <br />
-    <input type="text" name="CategoryName" />
+    <input type="text" name="CategoryName" required="required" />
     <br /><br />
 
     <label>Descriere</label>
-    <br /> <input type="text" name="Description"/>
+    <br /> <input type="text" name="Description" />
     <br /><br />
 
     <button class="btn btn-primary" type="submit">Adauga categoria</button>
 </form>
+
+<br />
+<br />
+<br />
+
+
+
+<h1>Afisare categorii</h1>
+<br />
+
+@* Afisare categorii *@ 
+
+@foreach (var category in ViewBag.Categories)
+{
+    <p class="card-title fw-bold">@category.CategoryName</p>
+    <div class="card-text">@category.Description</div>
+    <br />
+
+    @if(ViewBag.AfisareButoane)
+    {
+        <a class="btn alert-primary" href="/Categories/Edit/@category.Id">Editeaza categoria</a>
+        <form method="post" action="/Categories/Delete/@category.Id">
+            <button class="btn alert-danger" type="submit">Sterge</button>
+        </form>
+    }
+    
+    <hr />
+}
+
+
+
+
+
+
 
 
 

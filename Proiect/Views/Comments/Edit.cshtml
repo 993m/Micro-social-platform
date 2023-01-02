@@ -1,15 +1,19 @@
-﻿<h2>Editare comentariu</h2>
+﻿@model Proiect.Models.Comment
+
+<h2>Editare comentariu</h2>
 <br />
 
-<form method="post" action="/Comments/Edit/@ViewBag.Comment.Id">
-    
-    <p>@ViewBag.Comment.User.UserName</p>
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Comments", method: FormMethod.Post, routeValues: new { id = Model.Id }))
+{
+    @Html.Display("User.UserName")
+    <br /> <br />
 
-    <label>Continutul comentariului</label>
+    @Html.Label("Content", "Continutul comentariului")
     <br />
-    <textarea name="Content">@ViewBag.Comment.Content</textarea>
-    <br />
+    @Html.Editor("Content", new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
+    <br /> <br />
 
     <button class="btn-primary btn-primary" type="submit">Editeaza comentariul</button>
 
-</form>
+}

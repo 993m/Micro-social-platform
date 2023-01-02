@@ -53,8 +53,15 @@
    
         <i class="bi bi-card-list"></i>
         <label>Selectati rolul</label>
-        @Html.DropDownList("newRole", new SelectList(Model.AllRoles, "Value", "Text", ViewBag.UserRole), null, new { @class = "form-control" })
+        <br />
+        @Html.DropDownList("newRole", new SelectList(Model.AllRoles, "Value", "Text", ViewBag.UserRole), null, new { @class = "" })
     
+    <br />
+
+    @Html.EditorFor(m => m.ProfilPrivat)
+    <i class="bi bi-person-lock"></i>
+    @Html.Label("ProfilPrivat", "Profil privat", new { @class = "form-check-label" })
+
     <br />
 
     <button class="btn btn-sm btn-success" type="submit">Editare user</button>

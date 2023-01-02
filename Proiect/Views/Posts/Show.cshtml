@@ -1,59 +1,45 @@
-﻿<div class="d-flex justify-content-center">
+﻿@model Proiect.Models.Post
 
-    <a class="btn btn-primary" href="/Posts/Index/">Afisare postari</a>
 
-    <a class="btn btn-primary" href="/Posts/New/">Adauga postare</a>
+<div class="d-flex justify-content-center ">
+
+    <a href="/Posts/New" class="btn btn-primary">Adauga postare</a>
 
 </div>
 
 <br />
+
+
+<h3 class="alert-primary">@ViewBag.Msg</h3>
+
 
 <div class="card">
 
-    <div class="card-body">
+    @Html.Partial("PostInfo", Model)
 
-        <div class="alert-primary">@ViewBag.Post.Title</div>
+    @if(ViewBag.AfisareButoane || ViewBag.UserCurent== Model.UserId)
+    {
+        <div class="card-body d-flex justify-content-center">
 
-        <div class="card-text">@ViewBag.Post.Content</div>
+            <a href="/Posts/Edit/@Model.Id" class="btn btn-outline-primary">Editeaza postarea</a>
 
-        @*
-        Adaugat vizualizare user
-        *@
+            <form method="post" action="/Posts/Delete/@Model.Id">
 
-        @if (ViewBag.Post.User != null)
-        {
-            <div class="card-text">   <i class="bi bi-person-workspace">   </i>   @ViewBag.Post.User.UserName</div>
-        }
+                <button class="btn btn-outline-danger" type="submit">Sterge postarea</button>
 
-        <div class="d-flex flex-row justify-content-between mt-5">
-
-            <div><i class="bi bi-tag"></i> @ViewBag.Category.CategoryName</div>
-            <span class="alert-primary">@ViewBag.Post.Date</span>
+            </form>
 
         </div>
-
-    </div>
-
-    <hr />
-
-    <div class="d-flex flex-row justify-content-between">
-
-        <a href="/Posts/Edit/@ViewBag.Post.Id" class="btn btn-outline-primary">Editeaza postarea</a>
-
-        <form method="post" action="/Posts/Delete/@ViewBag.Post.Id">
-
-            <button class="btn btn-outline-danger" type="submit">Sterge postarea</button>
-
-        </form>
-
-    </div>
+    }
 
 </div>
 
 <br />
 <br />
 
-@* Afisare comentarii impreuna cu butoanele de editare si stergere si autor *@
+
+
+@* Afisare comentarii *@
 
 @foreach (var comm in ViewBag.Comments)
 {
@@ -68,28 +54,28 @@
                 <div>
 
                     <p>@comm.Content</p>
-                    <p><i class="bi bi-person-bounding-box"></i>  @comm.User.UserName</p>
+                    <a href="/ApplicationUsers/Show/@comm.UserId"><i class="bi bi-person-bounding-box"></i>  @comm.User.UserName</a>
                     <small>@comm.Date</small>
 
                 </div>
 
                 <br />
 
-                <div class="d-flex">
+                @if (ViewBag.AfisareButoane || ViewBag.UserCurent == comm.UserId)
+                {
+                    <div class="d-flex">
 
-                    <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Editeaza</a>
+                        <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Editeaza</a>
 
-                </div>
+                        <form method="post" action="/Comments/Delete/@comm.Id">
 
-                <div>
+                            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
 
-                    <form method="post" action="/Comments/Delete/@comm.Id">
+                        </form>
 
-                        <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
+                    </div>
 
-                    </form>
-
-                </div>
+                }
 
             </div>
 
@@ -123,14 +109,14 @@
                 
                     <div class="card-body">
 
-                        <input type="hidden" name="PostId" value="@ViewBag.Post.Id" />
+                        <input type="hidden" name="PostId" value="@Model.Id" />
 
                         <label>Continutul comentariului</label>
                         <br />
-                        <textarea class="form-control" name="Content"></textarea>
-                        <br />
-
-                        <button class="btn btn-primary type="submit">Adauga comentariul</button>
+                        <textarea class="form-control" name="Content" required="required"></textarea>
+                        <br /><br />
+                        
+                        <button class="btn btn-primary" type="submit">Adauga comentariul</button>
 
                     </div>
                     

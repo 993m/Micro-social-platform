@@ -1,18 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Proiect.Data;
 using Proiect.Models;
-
-/*
- *  Sper ca nu mai am de adaugat nimic aici
- *  Daca am, va rog sa imi spuneti --- Tin sa precizez ca asta a scris copilotul si sunt socata
- *  
- *  Alta modificare: Am modificat redirecturile alea sa ne duca pe pagina grupului daca are
- *          ^ Scos butoane din view unde este cazul
- * 
- */
+using System.Drawing.Drawing2D;
 
 namespace Proiect.Controllers
 {
@@ -32,86 +25,137 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        // Se afiseaza lista tuturor postarilor din baza de date impreuna cu categoria din care fac parte
-        // HttpGet implicit
-        public async Task<IActionResult> IndexAsync()
+        public IActionResult Index(int? categoryId)
         {
-            var posts = db.Posts.Include("Category").Include("User") /// modificare: afisare user
-                            .Where(p => p.GroupId == null);
+            // apar doar postari ale altor persoane (cu profil public sau prieteni)
+
+            var user = _userManager.GetUserId(User);
+            var posts = db.Posts.Include("Category").Include("User")
+                            .Where(p => p.GroupId == null && p.UserId != user);
+
+            if (categoryId != null)
+            {
+                posts = posts.Where(p => p.CategoryId == categoryId);
+            }
+
+            
+            var prieteni = db.Friends.Where(m => m.FriendId == user);
+            
+            posts = posts.Where(p => !p.User.ProfilPrivat || prieteni.Where(pr => pr.UserId == p.UserId).FirstOrDefault() != null);
+
             ViewBag.Posts = posts;
+
+           if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
+
+            ViewBag.Categ = GetAllCategories();
+
             return View();
         }
 
-        // Se afiseaza o singura postare in functie de id-ul sau, impreuna cu comentariile si categoria din care face parte
-        // HttpGet implicit
-        // La comentarii am adaugat si autorul fiecaruia
 
         public IActionResult Show(int id)
         {
-            Post post = db.Posts.Include("Category").Include("User") /// modificare: afisare user
+            Post post = db.Posts.Include("Category")
+                                .Include("User") 
                                 .Include("Comments")
                                 .Where(p => p.Id == id)
                                 .First();
 
-            var comments = db.Comments.Include("User") /// modificare: afisare user
+            var comments = db.Comments.Include("User")           
                                 .Where(c => c.PostId == id);
+
             ViewBag.Comments = comments;
 
-            ViewBag.Post = post;
-            ViewBag.Category = post.Category;
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
 
-            return View();
+            SetAccessRights();
+            
+            return View(post);
         }
 
-        // Se afiseaza formularul in care se vor completa datele unei postari impreuna cu selectarea categoriei din care face parte postarea
-        // HttpGet implicit
 
         [Authorize] /// se asigura ca nu poti posat ca guest
-        public IActionResult New(int id) 
+        public IActionResult New(int? id) 
         {
-            var categories = from categ in db.Categories
-                             select categ;
+            Post post = new Post();
 
-            ViewBag.group = id;
-            if (id == 0) ViewBag.group = null;
-            ViewBag.Categories = categories;
-            
-            
+            // verificare daca userul are dreptul de a posta in grup
+            if (id != null)
+            {
+                var idUserCurent = _userManager.GetUserId(User);
 
-            return View();
+                var membru = db.ApplicationUsersInGroups
+                        .Where(m => m.UserId == idUserCurent && m.GroupId == id)
+                        .FirstOrDefault();
+
+                
+                
+                var creator = db.Groups.Find(id).UserId;
+
+                if (membru == null && creator != idUserCurent)
+                 {
+                    TempData["message"] = "Nu puteti posta in grup deoarece nu sunteti membru.";
+                    return RedirectToAction("Show");
+                 }           
+                
+            }
+
+            post.Categ = GetAllCategories();
+
+            post.GroupId = id;
+
+            return View(post);
         }
 
-        // Adaugarea articolului in baza de date
+
         [HttpPost]
         [Authorize]
 
-        public async Task<IActionResult> NewAsync(Post post)
+        public async Task<IActionResult> NewAsync(Post requestPost)
         {
-            try
+            // ****************** Daca nu fac astea si lucrez direct cu parametrul din frunctie
+            // imi pune id la post (nu inteleg dc, nush) si imi da eroare ca incerc sa introduc manual un id in baza de date
+            Post post = new Post();
+
+            post.Title = requestPost.Title;
+            post.Content = requestPost.Content;
+            post.CategoryId = requestPost.CategoryId;
+            post.GroupId = requestPost.GroupId;
+            // ***********************************************
+
+            post.Date = DateTime.Now;
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            post.User = user;
+
+
+            if (ModelState.IsValid)
             {
-                var user = await _userManager.GetUserAsync(HttpContext.User); 
-                post.User = user;
                 db.Posts.Add(post);
                 db.SaveChanges();
 
-                if(post.GroupId != null)
+                TempData["message"] = "Postarea a fost adaugata";
+
+
+                if (post.GroupId != null)
                 {
                     return Redirect("/Groups/Show/" + post.GroupId);
                 }
 
                 return RedirectToAction("Index");
             }
-
-            catch (Exception)
+            else
             {
-                return RedirectToAction("New", post.GroupId);
-            }     
+                post.Categ = GetAllCategories();
+                return View(post);
+            }  
         }
 
-        // Se editeaza o postare existenta in baza de date impreuna cu categoria din care face parte
-        // Categoria se selecteaza dintr-un dropdown
-        // Se afiseaza formularul impreuna cu datele aferente postarii din baza de date
-        // HttpGet implicit
 
         /// <summary>
         ///  Modificare :
@@ -124,21 +168,20 @@ namespace Proiect.Controllers
         /// <returns></returns>
 
         [Authorize]
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> EditAsync(int id)
         {
             Post post = db.Posts.Include("Category").Include("User")
                                 .Where(p => p.Id == id)
                                 .First();
 
-            ViewBag.Post = post;
-            ViewBag.Category = post.Category;
-            ViewBag.User = post.User;
 
             var UsercurrId = await GetCurrUserIdAsync();
             var UsercurrRole = await GetCurrRoleAsync();
 
             if (UsercurrRole != "Admin" && UsercurrRole != "Moderator" && UsercurrId != post.UserId)
             {
+                TempData["message"] = "Nu aveti dreptul sa faceti modificati aceasta postare";
+
                 if (post.GroupId != null)
                 {
                     return Redirect("/Groups/Show/" + post.GroupId);
@@ -147,28 +190,28 @@ namespace Proiect.Controllers
                 return RedirectToAction("Index");
             }
 
-            var categories = from categ in db.Categories
-                             select categ;
 
-            ViewBag.Categories = categories;
+            post.Categ = GetAllCategories();
 
-            return View();
+            return View(post);
         }
 
-        // Se adauga postarea in baza de date
+        
         [HttpPost]
         [Authorize]
         public IActionResult Edit(int id, Post requestPost)
         {
             Post post = db.Posts.Find(id);
 
-            try
+            if (ModelState.IsValid)
             {
-                post.Title = requestPost.Title; //// Am adaugat asta
+                post.Title = requestPost.Title; 
                 post.Content = requestPost.Content;
-                post.Date = requestPost.Date;
                 post.CategoryId = requestPost.CategoryId;
                 db.SaveChanges();
+
+
+                TempData["message"] = "Postarea a fost modificata";
 
                 if (post.GroupId != null)
                 {
@@ -178,9 +221,10 @@ namespace Proiect.Controllers
                 return RedirectToAction("Index");
             }
 
-            catch (Exception)
+            else
             {
-                return RedirectToAction("Edit", id);
+                post.Categ = GetAllCategories();
+                return View(post);
             }
         }
 
@@ -213,6 +257,8 @@ namespace Proiect.Controllers
                     //// Verificare daca userul este moderator
                     if (UsercurrRole != "Moderator")
                     {
+                        TempData["message"] = "Nu aveti dreptul sa stergeti aceasta postare";
+
                         if (GroupId != null)
                         {
                             return Redirect("/Groups/Show/" + post.GroupId);
@@ -225,6 +271,8 @@ namespace Proiect.Controllers
 
             db.Posts.Remove(post);
             db.SaveChanges();
+
+            TempData["message"] = "Postarea a fost stearsa";
 
             if (GroupId != null)
             {
@@ -264,6 +312,37 @@ namespace Proiect.Controllers
             return id;
         }
 
+        [NonAction]
+        public IEnumerable<SelectListItem> GetAllCategories()
+        {
+            var selectList = new List<SelectListItem>();
+            
+            var categories = from cat in db.Categories
+                             select cat;
+            
+            foreach (var category in categories)
+            {
+                selectList.Add(new SelectListItem
+                    {
+                        Value = category.Id.ToString(),
+                        Text = category.CategoryName.ToString()
+                    });
+            }
+     
+            return selectList;
+        }
+
+        private void SetAccessRights()
+        {
+            ViewBag.AfisareButoane = false;
+
+            if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
+            ViewBag.UserCurent = _userManager.GetUserId(User);
+        }
 
     }
 }

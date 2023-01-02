@@ -12,7 +12,7 @@ namespace Proiect.Models
 
         public string? Description { get; set; }
 
-        public virtual ICollection<Post> Posts { get; set; }
+        public virtual ICollection<Post>? Posts { get; set; }
     }
 
 }

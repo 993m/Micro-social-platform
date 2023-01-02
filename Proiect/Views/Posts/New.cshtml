@@ -1,34 +1,29 @@
-﻿<h2>Adaugare postare</h2>
+﻿@model Proiect.Models.Post
+
+<h2>Adaugare postare</h2>
 <br />
 
-<form method="post" action="/Posts/New/">
-    <label>Titlul postarii</label>
-    <input type="text" name="Title" />
-    <br />
-    <br />
+@using (Html.BeginForm(actionName: "New", controllerName: "Posts", method: FormMethod.Post))
+{
+        @Html.Label("Title", "Titlul postarii")
+        <br />
+        @Html.TextBox("Title", null, new { @class = "form-control" })
+        @Html.ValidationMessage("Title", null, new { @class = "text-danger" })
+        <br /> <br />
 
-    <label>Continutul postarii</label>
-    <input type="text" name="Content" />
-    <br />
-    <br />
+        @Html.Label("Content", "Continutul postarii")
+        <br />
+        @Html.TextArea("Content", null, new { @class = "form-control" })
+        @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
+        <br /> <br />
 
-    <label>Selecteaza categoria</label>
-    <select name="CategoryId">
+        @Html.Label("CategoryId", "Selectati categoria")
+        <br />
+        @Html.DropDownList("CategoryId", new SelectList(Model.Categ, "Value", "Text"), "Categorii", new { @class = "form-control" })
+        @Html.ValidationMessage("CategoryId", null, new { @class = "text-danger" })
+        <br />  <br />
 
-         @foreach(var item in ViewBag.Categories)
-        {
-            <option value="@item.Id">@item.CategoryName</option>
-        }
+        @Html.Hidden("GroupId");
 
-    </select>
-
-    <br />
-    <br />
-
-    <input type="hidden" name="Date" value="@DateTime.Now" />
-
-    <input type="hidden" name="GroupId" value="@ViewBag.group" />
-
-    <button class="btn btn-primary" type="submit">Adauga postarea</button>
-
-</form>
+        <button class="btn btn-primary" type="submit">Adauga postarea</button>
+}    

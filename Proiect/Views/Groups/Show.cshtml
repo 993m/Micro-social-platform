@@ -1,6 +1,9 @@
-﻿<div class="d-flex justify-content-center">
+﻿@model Proiect.Models.Group
 
-    <a class="btn btn-primary" href="/Groups/Index/">Afisare grupuri</a>
+<h3 class="alert-primary">@ViewBag.Msg</h3>
+
+
+<div class="d-flex justify-content-center">
 
     <a class="btn btn-primary" href="/Groups/New/">Adauga grup</a>
 
@@ -8,39 +11,34 @@
 
 <br />
 
-<a href="/Posts/Index">Inapoi la postari</a>
-<br />
-<br />
-
-<br />
-
-@* Afisare informatii grup + buton editare grup si stergere grup si adaugare postare in grup *@
 
 <div class="card">
 
-    <div class="card-body">
+    @Html.Partial("GroupInfo", Model)
 
-        <h2 class="alert-primary">@ViewBag.Group.GroupName</h2>
+    <div class="card-body d-flex justify-content-evenly">
 
-        <p class="card-text">@ViewBag.Group.Description</p>
+        @if(ViewBag.EsteMembru || ViewBag.UserCurent == Model.UserId)
+        {        
+            <a class="btn btn-primary" href="/Posts/New/@Model.Id">Adauga postare in grup</a>
+        }
+        else
+        {
+            <a class="btn btn-primary" href="/Groups/JoinGroup/@Model.Id">Intra in grup</a>
+        }
 
-        <span class="alert-primary">@ViewBag.Group.Date</span>
-       
 
-        <div class="d-flex flex-row justify-content-between mt-5">
+        @if(ViewBag.AfisareButoane || ViewBag.UserCurent == Model.UserId)
+        {
+            <a class="btn btn-primary" href="/Groups/Edit/@Model.Id">Editeaza grupul</a>
 
-            <a class="btn btn-primary" href="/Posts/New/@ViewBag.Group.Id">Adauga postare in grup</a>
-
-            <a class="btn btn-primary" href="/Groups/Edit/@ViewBag.Group.Id">Editeaza grupul</a>
-            
-            <form method="post" action="/Groups/Delete/@ViewBag.Group.Id">
+            <form method="post" action="/Groups/Delete/@Model.Id">
 
                 <button class="btn btn-outline-danger" type="submit">Sterge grupul</button>
 
             </form>
-
-        </div>
-
+        }
+       
     </div>
 
 </div>
@@ -48,16 +46,19 @@
 <br />
 <br />
 
+
+
+
 @* Afisare membri grup *@
 
 <h2 class="alert-primary">Membrii grupului</h2>
 
-@foreach(var user in ViewBag.Group.Members){
+@foreach(var user in Model.Members){
     <div class="card">
 
         <div class="card-body">
 
-            <h4 class="alert-primary">@user.User.UserName</h4>
+            <a href="/ApplicationUsers/Show/@user.User.Id" class="alert-primary">@user.User.UserName</a>
 
         </div>
 
@@ -68,9 +69,13 @@
 <br />
 <br />
 
+
+
+
+
 @* Afisare postari *@
 
-@foreach (var post in ViewBag.Group.Posts)
+@foreach (var post in Model.Posts)
 {
     <div class="container">
 
@@ -82,23 +87,19 @@
 
                 <div class="card">
 
-                    <div class="card-body">
+                    <div class="card">
 
-                        <div class="alert-primary">@post.Title</div>
+                        @Html.Partial("PostInfo", post)
 
-                        <div class="card-text">@post.User.UserName</div>
+                        <div class="card-body d-flex justify-content-center">
 
-                        <div class="card-text">@post.Content</div>
-
-                        <div class="d-flex flex-row justify-content-between mt-5">
-                
-                            <div><i class="bi bi-tag"></i> @post.Category.CategoryName </div>
                             <a href="/Posts/Show/@post.Id" class="btn btn-outline-primary">Afisare postare</a>
-                            <span class="alert-primary">@post.Date</span>
-            
+
                         </div>
 
                     </div>
+                        
+        
 
                 </div>
 

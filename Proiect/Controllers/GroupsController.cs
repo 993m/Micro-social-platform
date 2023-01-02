@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Poiect.Controllers;
+using Proiect.Controllers;
 using Proiect.Data;
 using Proiect.Models;
 
@@ -43,7 +43,7 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        // Se afiseaza grupurile
+        
         [Authorize(Roles = "Admin,User,Moderator")]
         public IActionResult Index(int? id)
         {
@@ -61,6 +61,12 @@ namespace Proiect.Controllers
             {
                 ViewBag.Groups = db.Groups.Include("User");
             }
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
+
             return View();
         }
 
@@ -74,24 +80,21 @@ namespace Proiect.Controllers
         public IActionResult Index2()
         {
             var userId = _userManager.GetUserId(User);
-            /// Grupurile in care este membru
+            /// Grupurile in care este membru si pe care le ai creat
 
-            var Ids = from intrare in db.ApplicationUsersInGroups.Include(i => i.Group).ThenInclude(g => g.User).Where(g => g.UserId == userId)
-                  select new
-                  {
-                      GroupName = intrare.Group.GroupName,
-                      UserName = intrare.Group.User.UserName,
-                      Description = intrare.Group.Description,
-                      Id = intrare.Group.Id,
-                      Date = intrare.Group.Date
+            var Ids = from intrare in db.ApplicationUsersInGroups.Include(i => i.Group).ThenInclude(i => i.User).Where(i => i.UserId == userId)
+                      select intrare.Group;
+
+            var YourGroups = from g in db.Groups.Include(g => g.User).Where(g => g.UserId == userId)
+                             select g;
 
 
-                  };
+            ViewBag.YourGroups = YourGroups;
             ViewBag.Groups = Ids;
             return View();
         }
 
-        // Se afiseaza un singur grup impreuna cu postarile sale
+
         public IActionResult Show(int id)
         {
             Group group = db.Groups.Include(g => g.User)
@@ -104,96 +107,101 @@ namespace Proiect.Controllers
                                 .Where(g => g.Id == id)
                                 .First();
 
-            ViewBag.Group = group;
 
-            return View();
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
+
+            SetAccessRights(group.Id);
+
+            return View(group);
         }
 
-        // Se afiseaza formularul de adaugare grup
+        [Authorize]
         public IActionResult New()
         {
-            return View();
+            Group group = new Group();
+
+            return View(group);
         }
 
-        // Adaugarea grupului in baza de date
+       
         [HttpPost]
+        [Authorize]
         public IActionResult New(Group group)
         {
-            try
+            group.Date = DateTime.Now;
+            group.UserId = _userManager.GetUserId(User);
+            
+            if (ModelState.IsValid)
             {
-                group.Date = DateTime.Now;
-                group.UserId = _userManager.GetUserId(User);
-                group.User = _userManager.GetUserAsync(User).Result;
                 db.Groups.Add(group);
                 db.SaveChanges();
 
+                TempData["message"] = "Grupul a fost adaugat";
+
                 return RedirectToAction("Index");
             }
-
-            catch (Exception)
+            else
             {
-                return RedirectToAction("New");
+                return View(group);
             }
         }
 
-        // Afisare formular editare
+        
         public async Task<IActionResult> EditAsync(int id)
         {
-            Group group = db.Groups.Include("Posts")
-                                .Where(g => g.Id == id)
-                                .First();
+            Group group = db.Groups.Find(id);
 
             var UsercurrRole = await GetCurrRoleAsync();
             if (UsercurrRole != "Admin" && UsercurrRole != "Moderator" && group.UserId != _userManager.GetUserId(User))
             {
-                TempData["message"] = "Nu aveti dreptul sa stergeti acest grup!";
+                TempData["message"] = "Nu aveti dreptul sa editati acest grup!";
+
                 return RedirectToAction("Index");
             }
 
-            ViewBag.Group = group;
-
-            return View();
+            return View(group);
         }
 
-        // Se modifica grupul in baza de date
+        
         [HttpPost]
 
         public async Task<IActionResult> EditAsync(int id, Group requestGroup)
         {
             Group group = db.Groups.Find(id);
 
-            
-
-            try
+            if (ModelState.IsValid)
             {
                 group.GroupName = requestGroup.GroupName;
-                group.Date = requestGroup.Date;
                 group.Description = requestGroup.Description;
                 db.SaveChanges();
 
+                TempData["message"] = "Grupul a fost modificat";
+
                 return RedirectToAction("Index");
             }
-
-            catch (Exception)
+            else
             {
-                return RedirectToAction("Edit", id);
+                return View(group);
             }
         }
 
-        // Stergere grup
+       
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            
-            Group group = db.Groups.Include(g => g.Posts).ThenInclude(p => p.Comments)
-                                .Include(g => g.Members)
-                                .Where(g => g.Id == id)
-                                .First(); //// Stergere in cascada
+
+            Group group =  db.Groups.Find(id);
 
             var UsercurrRole = await GetCurrRoleAsync();
+
             if (UsercurrRole == "Admin" || UsercurrRole == "Moderator" || group.UserId == _userManager.GetUserId(User))
             {
                 db.Groups.Remove(group);
                 db.SaveChanges();
+
+                TempData["message"] = "Grupul a fost sters";
 
                 return RedirectToAction("Index");
             }
@@ -204,8 +212,6 @@ namespace Proiect.Controllers
             }
             
         }
-
-        
         public IActionResult JoinGroup(int id)
         {
             var user = _userManager.GetUserAsync(User).Result;
@@ -255,6 +261,8 @@ namespace Proiect.Controllers
             return RedirectToAction("Index");
         }
 
+
+
         [NonAction]
 
         //// Get current user role
@@ -265,6 +273,26 @@ namespace Proiect.Controllers
             var roles = await _userManager.GetRolesAsync(user);
             var role = roles.FirstOrDefault();
             return role;
+        }
+
+        private void SetAccessRights(int idGroup)
+        {
+            ViewBag.AfisareButoane = false;
+
+            if (User.IsInRole("Moderator") || User.IsInRole("Admin"))
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
+            var idUserCurent = _userManager.GetUserId(User);
+
+            ViewBag.UserCurent = idUserCurent;
+
+            var membru = db.ApplicationUsersInGroups
+                        .Where(m => m.UserId == idUserCurent && m.GroupId == idGroup)
+                        .FirstOrDefault();
+
+            ViewBag.EsteMembru = (membru == null ? false : true);
         }
     }
 }

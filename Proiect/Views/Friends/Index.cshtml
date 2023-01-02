@@ -1,22 +1,55 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿<datalist id="users_list">
+    @foreach (var user in ViewBag.AllUsers)
+    {
+        <option>@user</option>
+    }
+</datalist>
+
+<form action="/Friends/Index">
+    <div class="input-group">
+        <input class="form-control" name="searchString" placeholder="Search" list="users_list"></input>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+    </div>
+</form>
+
+
+
+<br />
+
+@if(ViewBag.Users != null)
+{
+    @foreach(var user in ViewBag.Users)
+    {
+        <div class="d-flex justify-content-between">
+            <p><i class="bi bi-person"></i> UserName: @user.UserName</p>
+            <a class="btn btn-primary" href="/ApplicationUsers/Show/@user.UserId">Vezi profilul</a>
+        </div>
+        <br />
+    }
+
 }
 
+<br />
+<br />
+
 <h1>Prieteni</h1>
+<br />
 
-@foreach(var friend in ViewBag.Friends){
-    <div class="card-body">
-        
-
+@foreach(var friend in ViewBag.Friends){  
+        @*
         <div class="d-flex flex-row justify-content-between mt-5">
-            
 
             <div><i class="bi bi-person-plus-fill"></i> @friend.UserId</div>
             <div><i class="bi bi-person-plus-fill"></i> @friend.FriendId</div>
             <div><i class="bi bi-person-plus-fill"></i> @friend.User.UserName</div>
         </div>
+        *@
 
-    </div>
+        <div class="d-flex justify-content-between">
+            <p><i class="bi bi-person"></i> UserName: @friend.User.UserName</p>
+            <a class="btn btn-primary" href="/ApplicationUsers/Show/@friend.UserId">Vezi profilul</a>
+        </div>
+
+        <br />
+
 }

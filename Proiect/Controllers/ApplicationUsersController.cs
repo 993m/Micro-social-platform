@@ -59,10 +59,15 @@ namespace Proiect.Controllers
         [Authorize(Roles = "Admin,User,Moderator")]
         public async Task<ActionResult> Show(string id)
         {
-            ApplicationUser user = db.Users.Find(id);
+            ApplicationUser user = db.Users.Include(u => u.Posts).ThenInclude(p => p.Category).Where(u => u.Id == id).First();
+
             var roles = await _userManager.GetRolesAsync(user);
 
             ViewBag.Roles = roles;
+
+            SetAccessRights(user.Id);
+
+            
 
             return View(user);
         }
@@ -221,7 +226,7 @@ namespace Proiect.Controllers
             }
 
             db.Users.Remove(user);
-            db.SaveChanges();
+            db.SaveChanges(); 
 
             if (rolecc == "Admin")
                 return RedirectToAction("Index");
@@ -355,5 +360,21 @@ namespace Proiect.Controllers
             return id;
         }
 
+        private void SetAccessRights(string idUserModel)
+        {
+            ViewBag.AfisareButoane = false;
+
+            var user = _userManager.GetUserId(User);
+
+            if (User.IsInRole("Admin") || user == idUserModel)
+            {
+                ViewBag.AfisareButoane = true;
+            }
+
+            var prieten = db.Friends.Where(m => m.UserId == idUserModel && m.FriendId == user)
+                        .FirstOrDefault();
+
+            ViewBag.ButonCerere = (prieten == null && user != idUserModel) ? true : false;
+        }
     }
 }

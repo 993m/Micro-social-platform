@@ -1,0 +1,13 @@
+﻿<div class="card-body">
+   
+    <h4 class="cart-title">@Model.Title</h4>
+    <span>@Model.Date</span>
+    <br /> <br />
+    <div class="card-text">@Model.Content</div>
+    <br />
+    <div class="d-flex flex-row justify-content-between">
+        <div><i class="bi bi-tag"></i> @Model.Category.CategoryName</div>
+        <div><a href="/ApplicationUsers/Show/@Model.User.Id"><i class="bi bi-person-workspace"></i>  @Model.User.UserName</a></div>
+    </div>
+
+</div>
