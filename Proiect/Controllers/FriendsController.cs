@@ -41,6 +41,12 @@ namespace Proiect.Controllers
                 ViewBag.Users = users;
             }
 
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Msg = TempData["message"].ToString();
+            }
+
+
             return View();
         }
     }

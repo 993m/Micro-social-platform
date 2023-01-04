@@ -59,7 +59,21 @@ namespace Proiect.Controllers
         [Authorize(Roles = "Admin,User,Moderator")]
         public async Task<ActionResult> Show(string id)
         {
+            
             ApplicationUser user = db.Users.Include(u => u.Posts).ThenInclude(p => p.Category).Where(u => u.Id == id).First();
+
+            /// verify if the user is a friend
+            ///
+            ApplicationUser currUser = await _userManager.GetUserAsync(HttpContext.User);
+            
+            Friend friend = db.Friends.Where(f => f.UserId == currUser.Id && f.FriendId == id).FirstOrDefault();
+
+
+            if (user.ProfilPrivat == true && (await GetCurrRoleAsync() != "Admin") && (friend == null))
+            {
+                TempData["message"] = "Nu aveti permisiunea de a accesa acest profil!";
+                return RedirectToAction("Index");
+            }
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -144,6 +158,7 @@ namespace Proiect.Controllers
                 user.FirstName = newData.FirstName;
                 user.LastName = newData.LastName;
                 user.PhoneNumber = newData.PhoneNumber;
+                user.ProfilPrivat = newData.ProfilPrivat;
 
 
                 //if (roleacc == "Admin")

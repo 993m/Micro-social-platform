@@ -1,4 +1,8 @@
-﻿<datalist id="users_list">
+﻿<h3 class="alert-primary">@ViewBag.Msg</h3>
+<br />
+
+
+<datalist id="users_list">
     @foreach (var user in ViewBag.AllUsers)
     {
         <option>@user</option>
@@ -23,6 +27,7 @@
         <div class="d-flex justify-content-between">
             <p><i class="bi bi-person"></i> UserName: @user.UserName</p>
             <a class="btn btn-primary" href="/ApplicationUsers/Show/@user.UserId">Vezi profilul</a>
+            <a class="btn btn-primary" href="/ApplicationUsers/FriendRequest/@user.UserId">Cerere Prietenie</a>
         </div>
         <br />
     }

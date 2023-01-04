@@ -25,10 +25,11 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index(int? categoryId)
+        public IActionResult Index(int? page, int? categoryId)
         {
             // apar doar postari ale altor persoane (cu profil public sau prieteni)
 
+            var perPage = 3;
             var user = _userManager.GetUserId(User);
             var posts = db.Posts.Include("Category").Include("User")
                             .Where(p => p.GroupId == null && p.UserId != user);
@@ -38,12 +39,19 @@ namespace Proiect.Controllers
                 posts = posts.Where(p => p.CategoryId == categoryId);
             }
 
+            if(page == null)
+            {
+                page = 1;
+            }
             
             var prieteni = db.Friends.Where(m => m.FriendId == user);
-            
+
             posts = posts.Where(p => !p.User.ProfilPrivat || prieteni.Where(pr => pr.UserId == p.UserId).FirstOrDefault() != null);
 
-            ViewBag.Posts = posts;
+            var offset = (int)(page - 1) * perPage;
+
+            ViewBag.Posts = posts.Skip(offset).Take(perPage);
+
 
            if (TempData.ContainsKey("message"))
             {
@@ -51,6 +59,17 @@ namespace Proiect.Controllers
             }
 
             ViewBag.Categ = GetAllCategories();
+
+            //// for pagination
+            var total = posts.Count();
+            if (total == 0) total = 1;
+            ViewBag.CurrentPage = page;
+            ViewBag.PerPage = perPage;
+            ViewBag.TotalItems = total;
+            //ViewBag.TotalPages = Math.Ceiling(posts.Count() / 5.0);
+
+            ViewBag.Controller = "Posts";
+            ViewBag.Action = "Index";
 
             return View();
         }

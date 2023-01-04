@@ -45,22 +45,26 @@ namespace Proiect.Controllers
 
         
         [Authorize(Roles = "Admin,User,Moderator")]
-        public IActionResult Index(int? id)
+        public IActionResult Index(int? page)
         {
+            var perPage = 3;
+            if (page == null) page = 1;
+            var cnt = db.Groups.Count();
+            if (page > (cnt / perPage) + 1) page = 1;
+            if (page < 1) page = 1;
+            if (cnt == 0)
+            {
+                cnt = 1;
+            }
+            ViewBag.Groups = db.Groups.Include("User");
+            ViewBag.TotalItems = cnt;
+            ViewBag.CurrentPage = page;
+            ViewBag.PerPage = perPage;
+            ViewBag.Pages = (int)Math.Ceiling((double)cnt / ViewBag.PerPage);
+            if(db.Groups.Count() != 0) ViewBag.Groups = db.Groups.Include("User").Skip((int)(page - 1) * perPage).Take(perPage);
 
-            if (id == 1)
-            {
-                var userId = _userManager.GetUserId(User);
-                ViewBag.Groups = db.Groups.Include("User").Where(g => g.UserId == userId);
-            }
-            else if (id == 2)
-            {
-                return RedirectToAction("Index2");
-            }
-            else
-            {
-                ViewBag.Groups = db.Groups.Include("User");
-            }
+            ViewBag.Controller = "Groups";
+            ViewBag.Action = "Index";
 
             if (TempData.ContainsKey("message"))
             {
@@ -77,25 +81,60 @@ namespace Proiect.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index2()
+        public IActionResult Index2(int? page1, int? page2)
         {
+            if (page1 == null) page1 = 1;
+            if (page2 == null) page2 = 1;
+            var perPage = 3;
             var userId = _userManager.GetUserId(User);
             /// Grupurile in care este membru si pe care le ai creat
 
             var Ids = from intrare in db.ApplicationUsersInGroups.Include(i => i.Group).ThenInclude(i => i.User).Where(i => i.UserId == userId)
                       select intrare.Group;
 
+            var cnt = (int)Ids.Count();
+            if (page1 > (cnt / perPage) + 1) page1 = 1;
+            if (page1 < 1) page1 = 1;
+            if (cnt == 0)
+            {
+                cnt = 1;
+            }
+            ViewBag.Groups = Ids;
+            ViewBag.TotalItems1 = cnt;
+            ViewBag.CurrentPage1 = page1;
+            ViewBag.PerPage1 = perPage;
+            //ViewBag.Pages1 = (int)Math.Ceiling((double)cnt / ViewBag.PerPage);
+            if (Ids.Count() != 0) ViewBag.Groups = Ids.Skip((int)(page1 - 1) * perPage).Take(perPage);
+            
+
             var YourGroups = from g in db.Groups.Include(g => g.User).Where(g => g.UserId == userId)
                              select g;
 
+            var cnt2 = YourGroups.Count();
+            if (page2 > (cnt2 / perPage) + 1) page2 = 1;
+            if (page2 < 1) page2 = 1;
+            if (cnt2 == 0)
+            {
+                cnt2 = 1;
+            }
+            ViewBag.Groups2 = YourGroups;
+            ViewBag.TotalItems2 = cnt2;
+            ViewBag.CurrentPage2 = page2;
+            ViewBag.PerPage2 = perPage;
+            //ViewBag.Pages2 = (int)Math.Ceiling((double)cnt2 / ViewBag.PerPage);
+            if (YourGroups.Count() != 0) ViewBag.YourGroups = YourGroups.Skip((int)(page2 - 1) * perPage).Take(perPage);
 
-            ViewBag.YourGroups = YourGroups;
-            ViewBag.Groups = Ids;
+
+            ViewBag.Controller = "Groups";
+            ViewBag.Action = "Index2";
+            ViewBag.Page1 = page1;
+            ViewBag.Page2 = page2;
+            
             return View();
         }
 
 
-        public IActionResult Show(int id)
+        public IActionResult Show(int id, int? page, int? page2)
         {
             Group group = db.Groups.Include(g => g.User)
                                 .Include(g => g.Members)
@@ -106,6 +145,52 @@ namespace Proiect.Controllers
                                 .ThenInclude(p => p.User)
                                 .Where(g => g.Id == id)
                                 .First();
+            
+
+            var perPage = 3;
+            if (page == null) page = 1;
+            var cnt = group.Posts.Count();
+            if (page > (cnt / perPage) + 1) page = 1;
+            if (page < 1) page = 1;
+            if (cnt == 0)
+            {
+                cnt = 1;
+            }
+            ViewBag.TotalItems = cnt;
+            ViewBag.CurrentPage = page;
+            ViewBag.PerPage = perPage;
+            if (group.Posts.Count() != 0) 
+                group.Posts = db.Posts.Include(p => p.Category)
+                                    .Include(p => p.User)
+                                    .Where(p => p.GroupId == id)
+                                    .Skip((int)(page - 1) * perPage)
+                                    .Take(perPage)
+                                    .ToList();
+            ViewBag.Id = id;
+
+            /// pagination for group members by page2
+
+            if (page2 == null) page2 = 1;
+            var cnt2 = group.Members.Count();
+            if (page2 > (cnt2 / perPage) + 1) page2 = 1;
+            if (page2 < 1) page2 = 1;
+            if (cnt2 == 0)
+            {
+                cnt2 = 1;
+            }
+            ViewBag.TotalItems2 = cnt2;
+            ViewBag.CurrentPage2 = page2;
+            ViewBag.PerPage2 = perPage;
+            if (group.Members.Count() != 0) 
+                group.Members = db.ApplicationUsersInGroups.Include(p => p.User)
+                                    .Where(p => p.GroupId == id)
+                                    .Skip((int)(page2 - 1) * perPage)
+                                    .Take(perPage)
+                                    .ToList();
+
+            ViewBag.Page = page;
+            ViewBag.Page2 = page2;
+            
 
 
             if (TempData.ContainsKey("message"))

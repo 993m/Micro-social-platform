@@ -1,5 +1,12 @@
 ﻿@model IEnumerable<Proiect.Models.Post>
 
+@{
+    var _currentPage = (int)ViewBag.CurrentPage;
+    var _perPage = (int)ViewBag.PerPage;
+    var _totalItems = (int)ViewBag.TotalItems;
+    var _totalPages = (int)Math.Ceiling((decimal)_totalItems / _perPage);
+}
+
 <div class="d-flex justify-content-center">
 
     <a href="/Posts/New" class="btn btn-primary">Adauga postare</a>
@@ -49,3 +56,27 @@
     
 
 }
+
+@Html.Partial("Pagination")
+
+@*
+<div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", "Posts", new { page = _currentPage - 1 })">Previous</a>
+            </li>
+            @for (int i = 1; i <= _totalPages; i++)
+            {
+                <li class="page-item @(_currentPage == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", "Posts", new { page = i })">@i</a>
+                </li>
+            }
+            <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action("Index", "Posts", new { page = _currentPage + 1 })">Next</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+*@

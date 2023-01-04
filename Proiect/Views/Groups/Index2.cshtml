@@ -41,6 +41,36 @@
     <br />
 }
 
+@{
+    var _currentPage = (int)ViewBag.CurrentPage2;
+    var _perPage = (int)ViewBag.PerPage2;
+    var _totalItems = (int)ViewBag.TotalItems2;
+    var _totalPages = (int)Math.Ceiling((decimal)_totalItems / _perPage);
+    var _controller = (string)ViewBag.Controller;
+    var _action = (string)ViewBag.Action;
+}
+
+
+<div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { page1 = ViewBag.Page1, page2 = _currentPage - 1 })">Anterior</a>
+            </li>
+            @for (int i = 1; i <= _totalPages; i++)
+            {
+                <li class="page-item @(_currentPage == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { page1 = ViewBag.Page1, page2 = i })">@i</a>
+                </li>
+            }
+            <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { page1 = ViewBag.Page1, page2 = _currentPage + 1 })">Urmator</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
 
 @if(ViewBag.Groups != null)
 {
@@ -66,3 +96,33 @@
     }
 }
 
+
+
+<br />
+
+@{
+    var _currentPage2 = (int)ViewBag.CurrentPage1;
+    var _totalItems2 = (int)ViewBag.TotalItems1;
+    var _totalPages2 = (int)Math.Ceiling((decimal)_totalItems2 / _perPage);
+}
+
+
+<div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item @(_currentPage2 == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { page1 = _currentPage2 - 1, page2 = ViewBag.Page2 })">Anterior</a>
+            </li>
+            @for (int i = 1; i <= _totalPages2; i++)
+            {
+                <li class="page-item @(_currentPage2 == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { page1 = i, page2 = ViewBag.Page2 })">@i</a>
+                </li>
+            }
+            <li class="page-item @(_currentPage2 == _totalPages2 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { page1 = _currentPage2 + 1, page2 = ViewBag.Page2 })">Urmator</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>

@@ -70,7 +70,37 @@
 <br />
 
 
+@{
+    var _currentPage2 = (int)ViewBag.CurrentPage2;
+    var _perPage = (int)ViewBag.PerPage;
+    var _totalItems2 = (int)ViewBag.TotalItems2;
+    var _totalPages2 = (int)Math.Ceiling((decimal)_totalItems2 / _perPage);
+    var _controller = (string)ViewBag.Controller;
+    var _action = (string)ViewBag.Action;
+    var _id = (int)ViewBag.Id;
+    var _page = (int)ViewBag.Page;
+    var _page2 = (int)ViewBag.Page2;
+}
 
+<div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item @(_currentPage2 == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = _currentPage2 - 1 })">Anterior</a>
+            </li>
+            @for (int i = 1; i <= _totalPages2; i++)
+            {
+                <li class="page-item @(_currentPage2 == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = i })">@i</a>
+                </li>
+            }
+            <li class="page-item @(_currentPage2 == _totalPages2 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = _currentPage2 + 1 })">Urmator</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
 
 
 @* Afisare postari *@
@@ -114,3 +144,31 @@
     <br />
     <br />
 }
+
+@{
+    var _currentPage = (int)ViewBag.CurrentPage;
+    var _totalItems = (int)ViewBag.TotalItems;
+    var _totalPages = (int)Math.Ceiling((decimal)_totalItems / _perPage);
+}
+
+<div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _currentPage - 1, page2 = _page2 })">Anterior</a>
+            </li>
+            @for (int i = 1; i <= _totalPages; i++)
+            {
+                <li class="page-item @(_currentPage == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = i, page2 = _page2 })">@i</a>
+                </li>
+            }
+            <li class="page-item @(_currentPage == _totalPages ? "disabled" : "")">
+                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _currentPage + 1, page2 = _page2 })">Urmator</a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+@Html.ActionLink("Back to List", "Index")   
