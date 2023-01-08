@@ -34,6 +34,8 @@ namespace Proiect.Controllers
             var posts = db.Posts.Include("Category").Include("User")
                             .Where(p => p.GroupId == null && p.UserId != user);
 
+            ViewBag.cat = categoryId;
+
             if (categoryId != null)
             {
                 posts = posts.Where(p => p.CategoryId == categoryId);

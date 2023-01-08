@@ -15,16 +15,16 @@
     <nav aria-label="Page navigation example">
         <ul class="pagination">
             <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage - 1 })">Anterior</a>
+                <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage - 1})">Anterior</a>
             </li>
             @for (int i = 1; i <= _totalPages; i++)
             {
                 <li class="page-item @(_currentPage == i ? "active" : "")">
-                    <a class="page-link" href="@Url.Action(_action, _controller, new { page = i })">@i</a>
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { page = i})">@i</a>
                 </li>
             }
             <li class="page-item @(_currentPage >= _totalPages ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage + 1 })">Urmator</a>
+                <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage + 1})">Urmator</a>
             </li>
         </ul>
     </nav>
