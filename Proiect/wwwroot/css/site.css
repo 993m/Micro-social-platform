@@ -15,4 +15,197 @@ html {
 
 body {
     margin-bottom: 60px;
+    background-color: #313036;
 }
+
+h2 {
+    color: white;
+}
+
+div {
+    color: #cce5ff;
+}
+
+input, .cls {
+    background-color: #232226;
+    border-color: #808080;
+    color: #d6d6d6;
+}
+
+.text-danger {
+    color: darkorange !important;
+}
+
+label {
+    color: white;
+}
+
+/* meniu */
+.navbar-dark {
+    background-color: #232226;
+}
+
+    .navbar-dark .navbar-brand {
+        color: white;
+    }
+
+        .navbar-dark .navbar-brand:hover, .navbar-dark .navbar-brand:focus {
+            background-color: #4f4f51;
+        }
+
+.text-light {
+    color: #d6d6d6 !important;
+}
+
+
+.text-light:hover {
+    color: white !important;
+    background-color: #4f4f51;
+}
+
+/* butoane */
+.btn {
+    margin: 3px;
+}
+
+.btn-primary {
+    border: none;
+    background-color: #232226;
+    color: #d6d6d6;
+}
+
+
+.btn:hover {
+    border: none;
+    background-color: #cce5ff;
+    color: #46778F;
+}
+
+
+.btn-outline-primary {
+    border-color: white;
+    color: white;
+}
+
+.btn-outline-danger {
+    border-color: black;
+    color: black;
+}
+
+header {
+    background-image: url('../imagaes/baloane.jpeg');
+}
+
+/* carduri */
+.alert-primary {
+    background-color: #313036;
+    color: darkorange;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    margin: auto;
+}
+
+.card {
+    background-color: #30637c;
+    border-style: solid;
+    border-color: #cce5ff;
+    border-width: 1px;
+    padding: 10px;
+}
+
+.card-body {
+    color: #cce5ff;
+}
+
+
+a {
+    color: #cce5ff;
+    text-decoration: none;
+}
+
+
+    a:hover {
+        color: black;
+    }
+
+
+h1 {
+    color:white;
+}
+
+h4 {
+    font-size: 30px;
+    color: white;
+}
+
+h2 {
+    font-size: 40px;
+    text-align: center;
+    color: white;
+}
+
+.card-text {
+    color: white;
+}
+
+
+/* comentarii */
+.form-control {
+    background-color: #232226;
+    border-color: #808080;
+    color: #d6d6d6;
+}
+
+    .form-control:focus {
+        background-color: #232226;
+        border-color: #808080;
+        color: #d6d6d6;
+    }
+
+    .form-control::placeholder {
+        color: #d6d6d6;
+    }
+
+p {
+    color: white;
+    font-size: 15px;
+}
+
+/* paginare */
+.page-link {
+    border: 1px solid #313036;
+    background-color: #232226;
+    color: #d6d6d6;
+}
+
+    .page-link:hover {
+        border: none;
+        background-color: #cce5ff;
+        color: #46778F;
+    }
+
+.page-item.active .page-link {
+    color: white;
+    background-color: #30637c;
+    border: 1px solid #313036;
+}
+
+.page-item.disabled .page-link {
+    color: whitesmoke;
+    border: 1px solid #313036;
+    background-color: #3c3b42;
+}
+
+.card .page-item.active .page-link {
+    color: white;
+    background-color: #6192aa;
+    border: 1px solid #6192aa;
+}
+
+.card .page-item.disabled .page-link {
+    color: whitesmoke;
+    border: 1px solid #6192aa;
+    background-color: #46778F;
+}
+

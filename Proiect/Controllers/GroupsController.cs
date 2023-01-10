@@ -136,7 +136,8 @@ namespace Proiect.Controllers
 
         public IActionResult Show(int id, int? page, int? page2)
         {
-            Group group = db.Groups.Include(g => g.User)
+            Group group;
+            try { group = db.Groups.Include(g => g.User)
                                 .Include(g => g.Members)
                                 .ThenInclude(m => m.User)
                                 .Include(g => g.Posts)
@@ -144,8 +145,14 @@ namespace Proiect.Controllers
                                 .Include(g => g.Posts)
                                 .ThenInclude(p => p.User)
                                 .Where(g => g.Id == id)
-                                .First();
-            
+                                .First(); }
+
+
+            catch (System.InvalidOperationException)
+            {
+                TempData["message"] += "Grupul nu exista. ";
+                return RedirectToAction("Index");
+            }
 
             var perPage = 3;
             if (page == null) page = 1;
@@ -207,13 +214,12 @@ namespace Proiect.Controllers
         public IActionResult New()
         {
             Group group = new Group();
-
             return View(group);
         }
 
        
-        [HttpPost]
         [Authorize]
+        [HttpPost]
         public IActionResult New(Group group)
         {
             group.Date = DateTime.Now;
@@ -237,7 +243,14 @@ namespace Proiect.Controllers
         
         public async Task<IActionResult> EditAsync(int id)
         {
-            Group group = db.Groups.Find(id);
+
+            Group group;
+            try { group = db.Groups.Find(id); }
+            catch (System.InvalidOperationException)
+            {
+                TempData["message"] += "Grupul nu exista. ";
+                return RedirectToAction("Index");
+            }
 
             var UsercurrRole = await GetCurrRoleAsync();
             if (UsercurrRole != "Admin" && UsercurrRole != "Moderator" && group.UserId != _userManager.GetUserId(User))

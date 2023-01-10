@@ -1,4 +1,7 @@
-﻿<div class="d-flex justify-content-center">
+﻿<h3 class="alert-primary">@ViewBag.Msg</h3>
+<br />
+
+<div class="d-flex justify-content-center">
 
     <a href="/Groups/New" class="btn btn-primary">Adauga grup</a>
     <a href="/Groups/Index2" class="btn btn-primary">Grupurile tale</a>
@@ -10,10 +13,8 @@
 
 <h2>Afisare grupuri</h2>
 <br />
-
-
-<h3 class="alert-primary">@ViewBag.Msg</h3>
 <br />
+
 
 
 @foreach (Proiect.Models.Group group in ViewBag.Groups)

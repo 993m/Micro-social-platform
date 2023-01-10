@@ -41,7 +41,21 @@ namespace Proiect.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             comm.User = user;
 
-            try
+            Post post = db.Posts.Where(p => p.Id == comm.PostId).First();
+            if (post.GroupId == null) ;
+            else
+            {
+                int gId = (int)post.GroupId;
+                var inGroup = db.ApplicationUsersInGroups.Where(g => g.GroupId == gId && g.UserId == user.Id).FirstOrDefault();
+                if(inGroup == null)
+                {
+                    ViewBag.AfisareForm = false;
+                    TempData["message"] = "Nu poti adauga comentariu";
+                    return Redirect("/Posts/Show/" + comm.PostId);
+                }
+            }
+
+            if (ModelState.IsValid)
             {
                 db.Comments.Add(comm);
                 db.SaveChanges();
@@ -51,8 +65,9 @@ namespace Proiect.Controllers
                 return Redirect("/Posts/Show/" + comm.PostId);
             }
 
-            catch (Exception)
+            else
             {
+                TempData["message"] = "Comentariul nu a putut fi adaugat";
                 return Redirect("/Posts/Show/" + comm.PostId);
             }
         }

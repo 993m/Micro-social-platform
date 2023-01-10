@@ -18,7 +18,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Proiect</a>
+                <a class="navbar-brand nav-link text-light" asp-area="" asp-controller="Posts" asp-action="Index">Proiect</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -27,41 +27,41 @@
                     <ul class="navbar-nav flex-grow-1">
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Posts" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Posts" asp-action="Index">Home</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Groups" asp-action="Index">Grupuri</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Groups" asp-action="Index">Grupuri</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Categorii</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Categories" asp-action="Index">Categorii</a>
                         </li>
 
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ApplicationUsers" asp-action="Show" asp-route-id="@UserManager.GetUserId(User)">Profil</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="ApplicationUsers" asp-action="Show" asp-route-id="@UserManager.GetUserId(User)">Profil</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Notifications" asp-action="Index" asp-route-id="@UserManager.GetUserId(User)">Notificari</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="Notifications" asp-action="Index" asp-route-id="@UserManager.GetUserId(User)">Notificari</a>
                             </li>
                         }
 
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ApplicationUsers" asp-action="Index">Utilizatori</a>
+                                <a class="nav-link text-light" asp-area="" asp-controller="ApplicationUsers" asp-action="Index">Utilizatori</a>
                             </li>
                         }
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Friends" asp-action="Index">Prieteni</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Friends" asp-action="Index">Prieteni</a>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
 
                     </ul>

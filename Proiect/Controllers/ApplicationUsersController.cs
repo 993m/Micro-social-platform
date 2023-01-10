@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Proiect.Data;
 using Proiect.Models;
+using System;
 using System.Data;
-
 /*
  *  de introdus:
  *  ^ verificare vizibilitate profil la show
@@ -21,19 +21,22 @@ namespace Proiect.Controllers
     /// Nu ar trebui sa apara probleme la aflarea rolului si id-ului curent 
     ///    intrucat doar persoanele logate pot accesa aceste pagini
     /// </summary>
-    [Authorize]
+    //[Authorize]
     public class ApplicationUsersController : Controller
     {
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         public ApplicationUsersController(
         ApplicationDbContext context,
+        SignInManager<ApplicationUser> signInManager,
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager
         )
         {
             db = context;
+            _signInManager = signInManager;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -56,32 +59,47 @@ namespace Proiect.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Admin,User,Moderator")]
+        //[Authorize(Roles = "Admin,User,Moderator")]
         public async Task<ActionResult> Show(string id)
         {
-            
-            ApplicationUser user = db.Users.Include(u => u.Posts).ThenInclude(p => p.Category).Where(u => u.Id == id).First();
+            ApplicationUser user;
+            try { user = db.Users.Include(u => u.Posts).ThenInclude(p => p.Category).Where(u => u.Id == id).First(); }
+            catch (System.InvalidOperationException)
+            {
+                TempData["message"] += "Utilizatorul nu exista. ";
+                return RedirectToAction("Index");
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            ViewBag.Roles = roles;
 
+
+            if(!_signInManager.IsSignedIn(HttpContext.User))
+            {
+                if (user.ProfilPrivat == true)
+                {
+                    TempData["message"] = "Nu aveti permisiunea de a accesa acel profil!";
+                    return Redirect("/Friends/Index");
+                }
+                ViewBag.ButonCerere = true;
+                ViewBag.AfisareButoane = false;
+                return View(user);
+            }
+
+            
             /// verify if the user is a friend
             ///
             ApplicationUser currUser = await _userManager.GetUserAsync(HttpContext.User);
-            
+
             Friend friend = db.Friends.Where(f => f.UserId == currUser.Id && f.FriendId == id).FirstOrDefault();
 
 
-            if (user.ProfilPrivat == true && (await GetCurrRoleAsync() != "Admin") && (friend == null))
+            if (currUser.Id != id && user.ProfilPrivat == true && (await GetCurrRoleAsync() != "Admin") && (friend == null))
             {
-                TempData["message"] = "Nu aveti permisiunea de a accesa acest profil!";
-                return RedirectToAction("Index");
+                TempData["message"] = "Nu aveti permisiunea de a accesa acel profil!";
+                return Redirect("/Friends/Index");
             }
 
-            var roles = await _userManager.GetRolesAsync(user);
-
-            ViewBag.Roles = roles;
-
             SetAccessRights(user.Id);
-
-            
 
             return View(user);
         }
@@ -114,8 +132,14 @@ namespace Proiect.Controllers
                 return RedirectToAction("Index");
             }
 
-            ApplicationUser user = db.Users.Find(id);
-            
+            ApplicationUser user;
+                try { user = db.Users.Find(id); }
+            catch (System.InvalidOperationException)
+            {
+                TempData["message"] += "Utilizatorul nu exista. ";
+                return RedirectToAction("Index");
+            }
+
             if (role == "Admin")
                 user.AllRoles = GetAllRoles();
 
@@ -248,6 +272,7 @@ namespace Proiect.Controllers
             else return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
         public IActionResult FriendRequest(string id)
         {
             var user = db.Users.Find(id);

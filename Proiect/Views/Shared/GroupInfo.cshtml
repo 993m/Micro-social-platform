@@ -1,17 +1,13 @@
 ﻿<div class="card-body">
 
-    <h1 class="alert-primary">@Model.GroupName</h1>
-    <br />
+    <h4 class="card-title">@Model.GroupName</h4>
+    <span>Creat de <a href="/ApplicationUsers/Show/@Model.User.Id"> <i class="bi bi-person-video"></i> @Model.User.UserName</a> pe @Model.Date.ToString("dd/MM/yyyy")</span>
 
-    @if(Model.Description!=null){
-        <div class="text ">@Model.Description</div>
-        <br />
+    @if (Model.Description != null)
+    {
+        <br /> <br />
+        <div class="card-text">@Model.Description</div>
+
     }
 
-    <div class="d-flex justify-content-between">
-        <a href="/ApplicationUsers/Show/@Model.User.Id"><i class="bi bi-person-video"></i>  @Model.User.UserName</a>
-        <span class="alert-primary">@Model.Date</span>
-    </div>
-
 </div>
-

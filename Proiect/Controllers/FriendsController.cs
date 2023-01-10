@@ -7,7 +7,7 @@ using Proiect.Models;
 
 namespace Proiect.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class FriendsController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -33,8 +33,11 @@ namespace Proiect.Controllers
             {
                 searchString = searchString.ToLower().Trim();
 
-                var users = from user in db.ApplicationUsers
-                            select new { UserId = user.Id, user.UserName };
+                var prieteni = from f in db.Friends.Include("User").Where(f => f.FriendId == _userManager.GetUserId(User))
+                               select f.User;
+
+                var users = from user in db.ApplicationUsers.Except(prieteni)
+                            select new {UserId = user.Id, user.UserName, user.ProfilPrivat};
 
                 users = users.Where(u => u.UserName.ToLower().Contains(searchString));
 

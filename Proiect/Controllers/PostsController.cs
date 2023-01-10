@@ -25,7 +25,7 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index(int? page, int? categoryId)
+        public async Task<IActionResult> IndexAsync(int? page, int? categoryId)
         {
             // apar doar postari ale altor persoane (cu profil public sau prieteni)
 
@@ -33,6 +33,12 @@ namespace Proiect.Controllers
             var user = _userManager.GetUserId(User);
             var posts = db.Posts.Include("Category").Include("User")
                             .Where(p => p.GroupId == null && p.UserId != user);
+
+            var UsercurrRole = await GetCurrRoleAsync();
+            if (UsercurrRole == "Admin" || UsercurrRole == "Moderator")
+            {
+                posts = db.Posts.Include("Category").Include("User");
+            }
 
             ViewBag.cat = categoryId;
 
@@ -77,18 +83,41 @@ namespace Proiect.Controllers
         }
 
 
-        public IActionResult Show(int id)
+        public async Task<IActionResult> ShowAsync(int id)
         {
-            Post post = db.Posts.Include("Category")
-                                .Include("User") 
+            ViewBag.AfisareForm = true;
+            Post post;
+            try {
+                post = db.Posts.Include("Category")
+                                .Include("User")
                                 .Include("Comments")
                                 .Where(p => p.Id == id)
                                 .First();
+            }
+
+            catch( System.InvalidOperationException) {
+                TempData["message"] += "Postarea nu exista. ";
+                return RedirectToAction("Index"); 
+            }
+
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user == null) { ViewBag.AfisareForm = false; }
+            else
+            {
+                var gId = post.GroupId;
+                if (gId != null)
+                {
+                    var inGroup = db.ApplicationUsersInGroups.Where(g => g.GroupId == gId && g.UserId == user.Id).FirstOrDefault();
+                    if (inGroup == null) { ViewBag.AfisareForm = false; }
+                }
+            }
 
             var comments = db.Comments.Include("User")           
                                 .Where(c => c.PostId == id);
 
             ViewBag.Comments = comments;
+            
 
             if (TempData.ContainsKey("message"))
             {
@@ -102,10 +131,9 @@ namespace Proiect.Controllers
 
 
         [Authorize] /// se asigura ca nu poti posat ca guest
-        public IActionResult New(int? id) 
+        public IActionResult New(Post post, int? id) 
         {
-            Post post = new Post();
-
+            
             // verificare daca userul are dreptul de a posta in grup
             if (id != null)
             {
@@ -122,7 +150,7 @@ namespace Proiect.Controllers
                 if (membru == null && creator != idUserCurent)
                  {
                     TempData["message"] = "Nu puteti posta in grup deoarece nu sunteti membru.";
-                    return RedirectToAction("Show");
+                    return Redirect("/Groups/Show/" + id);
                  }           
                 
             }
@@ -168,7 +196,7 @@ namespace Proiect.Controllers
                     return Redirect("/Groups/Show/" + post.GroupId);
                 }
 
-                return RedirectToAction("Index");
+                return Redirect("/ApplicationUsers/Show/" + post.UserId);
             }
             else
             {
@@ -191,9 +219,17 @@ namespace Proiect.Controllers
         [Authorize]
         public async Task<IActionResult> EditAsync(int id)
         {
-            Post post = db.Posts.Include("Category").Include("User")
+            Post post;
+            try
+            {
+                post = db.Posts.Include("Category").Include("User")
                                 .Where(p => p.Id == id)
                                 .First();
+            }
+            catch( System.InvalidOperationException) {
+                TempData["message"] += "Postarea nu exista. ";
+                return RedirectToAction("Index"); 
+            }
 
 
             var UsercurrId = await GetCurrUserIdAsync();
@@ -300,8 +336,8 @@ namespace Proiect.Controllers
                 return Redirect("/Groups/Show/" + post.GroupId);
             }
 
-            return RedirectToAction("Index");
-            
+            return Redirect("/ApplicationUsers/Show/" + post.UserId);
+
         }
 
         /// <summary>

@@ -25,13 +25,21 @@
     @foreach(var user in ViewBag.Users)
     {
         <div class="d-flex justify-content-between">
-            <p><i class="bi bi-person"></i> UserName: @user.UserName</p>
-            <a class="btn btn-primary" href="/ApplicationUsers/Show/@user.UserId">Vezi profilul</a>
-            <a class="btn btn-primary" href="/ApplicationUsers/FriendRequest/@user.UserId">Cerere Prietenie</a>
+                <div>
+                    <p><i class="bi bi-person"></i> UserName: @user.UserName</p>
+                </div>
+
+                <div>
+                @if (!user.ProfilPrivat)
+                {
+                    <a class="btn btn-primary" href="/ApplicationUsers/Show/@user.UserId">Vezi profilul</a>
+                }
+                    <a class="btn btn-primary" href="/ApplicationUsers/FriendRequest/@user.UserId">Cerere Prietenie</a>
+                </div>
         </div>
+        
         <br />
     }
-
 }
 
 <br />

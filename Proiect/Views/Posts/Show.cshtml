@@ -11,7 +11,7 @@
 
 
 <h3 class="alert-primary">@ViewBag.Msg</h3>
-
+<br />
 
 <div class="card">
 
@@ -36,7 +36,7 @@
 
 <br />
 <br />
-
+<br />
 
 
 @* Afisare comentarii *@
@@ -51,31 +51,30 @@
 
             <div class="col-md-8">
 
-                <div>
+                <p>@comm.Content</p>
 
-                    <p>@comm.Content</p>
-                    <a href="/ApplicationUsers/Show/@comm.UserId"><i class="bi bi-person-bounding-box"></i>  @comm.User.UserName</a>
-                    <small>@comm.Date</small>
-
-                </div>
-
-                <br />
-
-                @if (ViewBag.AfisareButoane || ViewBag.UserCurent == comm.UserId)
-                {
-                    <div class="d-flex">
-
-                        <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Editeaza</a>
-
-                        <form method="post" action="/Comments/Delete/@comm.Id">
-
-                            <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Sterge</button>
-
-                        </form>
-
+                <div class="d-flex justify-content-between">
+                    <div class="com">
+                        <a href="/ApplicationUsers/Show/@comm.UserId"><i class="bi bi-person-bounding-box"></i>  @comm.User.UserName</a>
+                        <small>@comm.Date</small>
                     </div>
+                    
+                    @if (ViewBag.AfisareButoane || ViewBag.UserCurent == comm.UserId)
+                    {
+                        <div class="d-flex">
 
-                }
+                            <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i></a>
+
+                            <form method="post" action="/Comments/Delete/@comm.Id">
+
+                                <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+
+                            </form>
+
+                        </div>
+
+                    }
+                </div>
 
             </div>
 
@@ -91,43 +90,46 @@
 
 <br />
 <br />
+<br />
+
 
 
 @* Afisarea formularului in care se poate adauga un comentariu *@
 
-<div class="container">
+@if (ViewBag.AfisareForm)
+{
+    <div class="container">
 
-    <div class="row">
+        <div class="row">
 
-        <div class="col-md-2"></div>
+            <div class="col-md-2"></div>
 
-        <div class="col-md-8">
+            <div class="col-md-8">
 
-            <div class="card">
+                <div class="card">
 
-                <form method="post" action="/Comments/New">
-                
-                    <div class="card-body">
+                    <form method="post" action="/Comments/New">
 
-                        <input type="hidden" name="PostId" value="@Model.Id" />
+                        <div class="card-body">
 
-                        <label>Continutul comentariului</label>
-                        <br />
-                        <textarea class="form-control" name="Content" required="required"></textarea>
-                        <br /><br />
-                        
-                        <button class="btn btn-primary" type="submit">Adauga comentariul</button>
+                            <input type="hidden" name="PostId" value="@Model.Id" />
 
-                    </div>
-                    
-                </form>
+                            <textarea class="form-control" name="Content" placeholder="Continutul comentariului"></textarea>
+                            <br />
+
+                            <button class="btn btn-primary" type="submit">Adauga comentariul</button>
+
+                        </div>
+
+                    </form>
+
+                </div>
 
             </div>
 
+            <div class="col-md-2"></div>
+
         </div>
 
-        <div class="col-md-2"></div>
-
     </div>
-
-</div>
+}

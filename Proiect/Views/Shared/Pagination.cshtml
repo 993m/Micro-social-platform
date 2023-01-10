@@ -1,8 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-
-@{
+﻿@{
     var _currentPage = (int)ViewBag.CurrentPage;
     var _perPage = (int)ViewBag.PerPage;
     var _totalItems = (int)ViewBag.TotalItems;
@@ -11,23 +7,23 @@
     var _action = (string)ViewBag.Action;
 }
 
-<div class="d-flex justify-content-center">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage - 1})">Anterior</a>
-            </li>
-            @for (int i = 1; i <= _totalPages; i++)
-            {
-                <li class="page-item @(_currentPage == i ? "active" : "")">
-                    <a class="page-link" href="@Url.Action(_action, _controller, new { page = i})">@i</a>
+
+    <div class="d-flex justify-content-center">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item @(_currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage - 1})">Anterior</a>
                 </li>
-            }
-            <li class="page-item @(_currentPage >= _totalPages ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage + 1})">Urmator</a>
-            </li>
-        </ul>
-    </nav>
+                @for (int i = 1; i <= _totalPages; i++)
+                {
+                    <li  class="page-item @(_currentPage == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action(_action, _controller, new { page = i})">@i</a>
+                    </li>
+                }
+                <li class="page-item @(_currentPage >= _totalPages ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action(_action, _controller, new { page = _currentPage + 1})">Urmator</a>
+                </li>
+            </ul>
+        </nav>
 
-</div>
-
+    </div>

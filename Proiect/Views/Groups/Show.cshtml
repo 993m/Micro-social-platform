@@ -30,7 +30,7 @@
 
         @if(ViewBag.AfisareButoane || ViewBag.UserCurent == Model.UserId)
         {
-            <a class="btn btn-primary" href="/Groups/Edit/@Model.Id">Editeaza grupul</a>
+            <a class="btn btn-outline-primary" href="/Groups/Edit/@Model.Id">Editeaza grupul</a>
 
             <form method="post" action="/Groups/Delete/@Model.Id">
 
@@ -50,58 +50,75 @@
 
 
 @* Afisare membri grup *@
+<div class="container">
 
-<h2 class="alert-primary">Membrii grupului</h2>
+    <div class="row">
 
-@foreach(var user in Model.Members){
-    <div class="card">
+        <div class="col-sm-2"></div>
 
-        <div class="card-body">
+        <div class="col-sm-8">
 
-            <a href="/ApplicationUsers/Show/@user.User.Id" class="alert-primary">@user.User.UserName</a>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Membrii grupului</h4>
+
+                    @foreach (var user in Model.Members)
+                    {
+                        <a href="/ApplicationUsers/Show/@user.User.Id"><i class="bi bi-person"></i> @user.User.UserName</a>
+                        <br />
+                    }
+                </div>
+
+                <br />
+
+                @{
+                    var _currentPage2 = (int)ViewBag.CurrentPage2;
+                    var _perPage = (int)ViewBag.PerPage;
+                    var _totalItems2 = (int)ViewBag.TotalItems2;
+                    var _totalPages2 = (int)Math.Ceiling((decimal)_totalItems2 / _perPage);
+                    var _controller = (string)ViewBag.Controller;
+                    var _action = (string)ViewBag.Action;
+                    var _id = (int)ViewBag.Id;
+                    var _page = (int)ViewBag.Page;
+                    var _page2 = (int)ViewBag.Page2;
+                }
+
+                <div class="d-flex justify-content-center">
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination">
+                            <li class="page-item @(_currentPage2 == 1 ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = _currentPage2 - 1 })">Anterior</a>
+                            </li>
+                            @for (int i = 1; i <= _totalPages2; i++)
+                            {
+                                <li class="page-item @(_currentPage2 == i ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = i })">@i</a>
+                                </li>
+                            }
+                            <li class="page-item @(_currentPage2 == _totalPages2 ? "disabled" : "")">
+                                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = _currentPage2 + 1 })">Urmator</a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
+
+
+            </div>
 
         </div>
 
+        <div class="col-sm-2"></div>
+
     </div>
-    
-}
-
-<br />
-<br />
-
-
-@{
-    var _currentPage2 = (int)ViewBag.CurrentPage2;
-    var _perPage = (int)ViewBag.PerPage;
-    var _totalItems2 = (int)ViewBag.TotalItems2;
-    var _totalPages2 = (int)Math.Ceiling((decimal)_totalItems2 / _perPage);
-    var _controller = (string)ViewBag.Controller;
-    var _action = (string)ViewBag.Action;
-    var _id = (int)ViewBag.Id;
-    var _page = (int)ViewBag.Page;
-    var _page2 = (int)ViewBag.Page2;
-}
-
-<div class="d-flex justify-content-center">
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <li class="page-item @(_currentPage2 == 1 ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = _currentPage2 - 1 })">Anterior</a>
-            </li>
-            @for (int i = 1; i <= _totalPages2; i++)
-            {
-                <li class="page-item @(_currentPage2 == i ? "active" : "")">
-                    <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = i })">@i</a>
-                </li>
-            }
-            <li class="page-item @(_currentPage2 == _totalPages2 ? "disabled" : "")">
-                <a class="page-link" href="@Url.Action(_action, _controller, new { id = _id, page = _page, page2 = _currentPage2 + 1 })">Urmator</a>
-            </li>
-        </ul>
-    </nav>
 
 </div>
 
+
+<br />
+<br />
+
+<br /><br />
 
 @* Afisare postari *@
 
@@ -128,8 +145,7 @@
                         </div>
 
                     </div>
-                        
-        
+                       
 
                 </div>
 

@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<Proiect.Models.Post>
 
+<h3 class="alert-primary">@ViewBag.Msg</h3>
+<br />
+
+
 <div class="d-flex justify-content-center">
 
     <a href="/Posts/New" class="btn btn-primary">Adauga postare</a>
@@ -9,24 +13,19 @@
 <br />
 
 
-<h2>Afisare postari</h2>
-<br />
-
-
 <form action="/Posts/Index">
 
-    <div class="input-group">
+    <div class="input-group m-3">
         @Html.DropDownList("categoryId", new SelectList(ViewBag.Categ, "Value", "Text"), "Filtreaza dupa categorie", new { @class = "form-control" })
         <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
     </div>
 
 </form>
 
+<br /> 
+
+<h2>Afisare postari</h2>
 <br /> <br />
-
-<h3 class="alert-primary">@ViewBag.Msg</h3>
-
-<br />
 
 
 @foreach(Proiect.Models.Post post in ViewBag.Posts)

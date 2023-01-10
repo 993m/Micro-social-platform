@@ -6,6 +6,7 @@ using Proiect.Models;
 
 namespace Proiect.Controllers
 {
+    [Authorize]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext db;
@@ -22,7 +23,7 @@ namespace Proiect.Controllers
             _roleManager = roleManager;
         }
 
-        public ActionResult Index()
+        public ActionResult Index(Category? cat)
         {
             var categories = from category in db.Categories
                              orderby category.CategoryName
@@ -36,7 +37,7 @@ namespace Proiect.Controllers
 
             SetAccessRights();
 
-            return View();
+            return View(cat);
         }
 
         
@@ -44,7 +45,7 @@ namespace Proiect.Controllers
         //[Authorize(Roles = "Admin,Moderator")]
         public ActionResult New(Category cat)
         {
-            try
+            if(ModelState.IsValid)
             {
                 db.Categories.Add(cat);
                 db.SaveChanges();
@@ -52,9 +53,10 @@ namespace Proiect.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            else
             {
-                return View();
+                TempData["message"] = "Categoria nu a putut fi adaugata";
+                return RedirectToAction("Index", cat);
             }
         }
 

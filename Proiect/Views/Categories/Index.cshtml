@@ -1,4 +1,6 @@
-﻿<h3 class="alert-primary">@ViewBag.Msg</h3>
+﻿@model Proiect.Models.Category
+
+<h3 class="alert-primary">@ViewBag.Msg</h3>
 
 
 @* Formular adaugare categorie *@
@@ -7,19 +9,17 @@
 <h1>Adaugare Categorie</h1>
 <br />
 
-<form method="post" action="/Categories/New">
-
-    <label>Numele categoriei</label>
+@using (Html.BeginForm(actionName: "New", controllerName: "Categories", method: FormMethod.Post))
+{
+    @Html.TextBox("CategoryName", null, new { @class = "form-control", @placeholder="Numele categoriei"})
+    @Html.ValidationMessage("CategoryName", null, new { @class = "text-danger" })
+    <br /><br />
+    
+    @Html.TextArea("Description", null, new { @class = "form-control", @placeholder="Descrierea categoriei" })
     <br />
-    <input type="text" name="CategoryName" required="required" />
-    <br /><br />
-
-    <label>Descriere</label>
-    <br /> <input type="text" name="Description" />
-    <br /><br />
 
     <button class="btn btn-primary" type="submit">Adauga categoria</button>
-</form>
+}
 
 <br />
 <br />
@@ -30,24 +30,33 @@
 <h1>Afisare categorii</h1>
 <br />
 
-@* Afisare categorii *@ 
+@* Afisare categorii *@
 
 @foreach (var category in ViewBag.Categories)
 {
-    <p class="card-title fw-bold">@category.CategoryName</p>
-    <div class="card-text">@category.Description</div>
-    <br />
+    <div class="d=flex justify-content-around">
+        <div>
+            <p class="card-title fw-bold">@category.CategoryName</p>
+            <div class="card-text">@category.Description</div>
+        </div>
 
-    @if(ViewBag.AfisareButoane)
+    @if (ViewBag.AfisareButoane)
     {
-        <a class="btn alert-primary" href="/Categories/Edit/@category.Id">Editeaza categoria</a>
-        <form method="post" action="/Categories/Delete/@category.Id">
-            <button class="btn alert-danger" type="submit">Sterge</button>
-        </form>
+        <div>
+
+            <a class="btn btn-primary" href="/Categories/Edit/@category.Id">Editeaza categoria</a>
+            <form method="post" action="/Categories/Delete/@category.Id">
+                <button class="btn btn-danger" type="submit">Sterge</button>
+            </form>
+
+        </div>
     }
-    
+    </div>
     <hr />
 }
+
+
+
 
 
 
